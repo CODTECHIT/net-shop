@@ -10,19 +10,19 @@ import { uploadImage } from "./cloudinary";
 
 dotenv.config();
 
-const app = express();
+export const app = express();
 const port = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret_change_me";
 const TOKEN_EXPIRY = "1h";
 
 // Security Headers
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP for easier deployment, or configure properly
+}));
 
 // CORS Configuration
 app.use(cors({
-  origin: process.env.NODE_ENV === "production"
-    ? "https://vayusnetworks.com"
-    : ["http://localhost:5173", "http://localhost:5174"],
+  origin: true, // Allow all origins in production for simplicity, or set specific domain
   credentials: true,
 }));
 
@@ -173,7 +173,10 @@ app.post("/api/admin/verify", authenticateAdmin, (req, res) => {
   res.json({ success: true });
 });
 
-app.listen(port, () => {
-  console.log(`Backend server running on port ${port}`);
-  console.log(`Security: Helmet, Rate Limiting, and JWT Auth enabled`);
-});
+if (process.env.NODE_ENV !== "production") {
+  app.listen(port, () => {
+    console.log(`Backend server running on port ${port}`);
+  });
+}
+
+export default app;
