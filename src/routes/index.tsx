@@ -1,14 +1,14 @@
-import { createFileRoute } from '@tanstack/react-router';
-import Hero from '../components/Hero';
-import Stats from '../components/Stats';
-import About from '../components/About';
-import Services from '../components/Services';
-import Products from '../components/Products';
-import HowItWorks from '../components/HowItWorks';
-import WhyChooseUs from '../components/WhyChooseUs';
-import Contact from '../components/Contact';
+import { createFileRoute } from "@tanstack/react-router";
+import Hero from "../components/Hero";
+import Stats from "../components/Stats";
+import About from "../components/About";
+import Services from "../components/Services";
+import Products from "../components/Products";
+import HowItWorks from "../components/HowItWorks";
+import WhyChooseUs from "../components/WhyChooseUs";
+import Contact from "../components/Contact";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   component: RouteComponent,
 });
 

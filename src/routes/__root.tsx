@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Outlet, Link, createRootRouteWithContext, useRouter } from "@tanstack/react-router";
+import { Outlet, Link, createRootRouteWithContext, useRouter, useLocation } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -33,13 +33,23 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="font-display text-xl font-semibold">This page didn't load</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Something went wrong. Try again or head home.</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Something went wrong. Try again or head home.
+        </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button onClick={() => { router.invalidate(); reset(); }}
-            className="rounded-md bg-[#0C1A2E] px-4 py-2 text-sm font-semibold text-white hover:opacity-90">
+          <button
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
+            className="rounded-md bg-[#0C1A2E] px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+          >
             Try again
           </button>
-          <Link to="/" className="rounded-md border border-input bg-background px-4 py-2 text-sm font-semibold hover:bg-accent">
+          <Link
+            to="/"
+            className="rounded-md border border-input bg-background px-4 py-2 text-sm font-semibold hover:bg-accent"
+          >
             Go home
           </Link>
         </div>
@@ -56,15 +66,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const location = useLocation();
+  const isAdminPath = location.pathname.startsWith("/admin");
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-1">
+        {!isAdminPath && <Navbar />}
+        <main className={isAdminPath ? "" : "flex-1"}>
           <Outlet />
         </main>
-        <Footer />
-        <FloatingWhatsApp />
+        {!isAdminPath && <Footer />}
+        {!isAdminPath && <FloatingWhatsApp />}
       </div>
       <Toaster richColors position="top-center" />
     </QueryClientProvider>

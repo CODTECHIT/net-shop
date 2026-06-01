@@ -1,184 +1,199 @@
-import { motion } from 'motion/react';
-import { ArrowRight, ShieldCheck, Zap, Star, CheckCircle2 } from 'lucide-react';
-import { Link } from '@tanstack/react-router';
+import { motion, useInView } from "motion/react";
+import { useRef } from "react";
+import {
+  ArrowRight,
+  ShieldCheck,
+  Zap,
+  FileText,
+  ScrollText,
+  Car,
+  Landmark,
+  Home,
+  Building2,
+} from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 export default function Hero() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const serviceIcons = [
+    { icon: <FileText className="w-6 h-6" />, label: "ID Cards", color: "bg-sky-500" },
+    { icon: <ScrollText className="w-6 h-6" />, label: "Certificates", color: "bg-purple-500" },
+    { icon: <Home className="w-6 h-6" />, label: "Property", color: "bg-emerald-500" },
+    { icon: <Car className="w-6 h-6" />, label: "Transport", color: "bg-amber-500" },
+    { icon: <Building2 className="w-6 h-6" />, label: "Municipal", color: "bg-rose-500" },
+    { icon: <Landmark className="w-6 h-6" />, label: "Registration", color: "bg-indigo-500" },
+  ];
+
   return (
-    <section 
-      id="home" 
+    <section
+      id="home"
       className="relative w-full min-h-screen flex items-center overflow-hidden bg-[#0A0F1C]"
     >
-      {/* Dynamic Animated Background */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
-        <motion.div 
-          animate={{ 
+      {/* Premium Background Layer */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2070"
+          alt="Workspace Background"
+          className="w-full h-full object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0F1C] via-[#0A0F1C]/90 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0A0F1C]"></div>
+      </div>
+
+      {/* Dynamic Animated Glows */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
+        <motion.div
+          animate={{
             scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-            x: [0, 50, 0]
+            opacity: [0.15, 0.3, 0.15],
           }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] rounded-full bg-sky-600/30 blur-[150px]"
+          className="absolute -top-[10%] -right-[5%] w-[600px] h-[600px] rounded-full bg-sky-500/20 blur-[120px]"
         />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.5, 1],
-            opacity: [0.2, 0.4, 0.2],
-            y: [0, 50, 0]
+        <motion.div
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.1, 0.2, 0.1],
           }}
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute -bottom-[20%] -left-[10%] w-[600px] h-[600px] rounded-full bg-blue-600/20 blur-[120px]"
+          className="absolute bottom-[10%] left-[10%] w-[500px] h-[500px] rounded-full bg-blue-600/10 blur-[100px]"
         />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 mix-blend-overlay"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full flex flex-col lg:flex-row items-center justify-between gap-16 pt-24 pb-20">
-        
-        {/* Left Content - Typography & CTA */}
-        <motion.div 
-          className="lg:w-[55%] flex flex-col items-start"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sky-300 text-sm font-semibold mb-8 backdrop-blur-md shadow-[0_0_20px_rgba(14,165,233,0.15)]">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-500"></span>
-            </span>
-            Premium Civic-Tech Services in Kurnool
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-16 sm:py-20 lg:py-24">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16" ref={ref}>
           
-          <h1 className="text-5xl sm:text-6xl lg:text-[5.5rem] font-extrabold text-white leading-[1.1] mb-6 tracking-tight">
-            Simplify Your <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-500">
-              Civic Needs.
-            </span>
-          </h1>
-          
-          <p className="text-lg lg:text-xl text-slate-400 mb-10 max-w-lg font-medium leading-relaxed">
-            Your one-stop premium destination for government certificates, property documents, utility payments, and transport services. Handled with absolute speed and integrity.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-5 w-full sm:w-auto">
-            <Link 
-              to="/services"
-              className="group relative inline-flex items-center justify-center px-8 py-4 bg-sky-500 hover:bg-sky-400 text-white rounded-xl font-bold text-lg transition-all duration-300 shadow-[0_0_40px_rgba(14,165,233,0.4)] hover:shadow-[0_0_60px_rgba(14,165,233,0.6)] overflow-hidden"
-            >
-              <span className="relative z-10 flex items-center">
-                Explore Services
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          {/* Left Content - Typography & CTA */}
+          <motion.div
+            className="lg:w-[55%] text-left"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sky-400 text-sm font-semibold mb-8 backdrop-blur-md shadow-[0_0_20px_rgba(14,165,233,0.1)]">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
               </span>
-              <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-sky-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </Link>
-            
-            <a 
-              href="https://wa.me/919100080233?text=Hi,+I+need+your+services"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-8 py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold text-lg transition-all duration-300 backdrop-blur-md"
-            >
-              WhatsApp Us
-            </a>
-          </div>
-
-          {/* Trust Indicators */}
-          <div className="mt-12 flex items-center gap-6 text-sm font-semibold text-slate-400">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-              100% Secure
+              Premium Civic-Tech Hub
             </div>
-            <div className="flex items-center gap-2">
-              <Zap className="w-5 h-5 text-amber-400" />
-              Fast Processing
-            </div>
-          </div>
-        </motion.div>
 
-        {/* Right Content - Floating Glassmorphic Bento Grid */}
-        <div className="lg:w-[45%] relative w-full h-[500px] hidden md:block perspective-1000">
-          
-          {/* Main Large Card */}
-          <motion.div 
-            className="absolute top-0 right-10 w-72 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl"
-            initial={{ opacity: 0, y: 50, rotateX: 10, rotateY: -15 }}
-            animate={{ 
-              opacity: 1, 
-              y: [0, -15, 0], 
-              rotateX: [10, 15, 10], 
-              rotateY: [-15, -10, -15] 
-            }}
-            transition={{ 
-              opacity: { duration: 1 },
-              default: { duration: 6, repeat: Infinity, ease: "easeInOut" }
-            }}
-          >
-            <div className="w-12 h-12 bg-gradient-to-br from-sky-400 to-blue-600 rounded-2xl mb-6 flex items-center justify-center shadow-lg shadow-sky-500/30">
-              <ShieldCheck className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-white font-bold text-xl mb-2">Verified Documents</h3>
-            <p className="text-slate-400 text-sm leading-relaxed">Authentic processing for all your sensitive government and property documentation needs.</p>
-          </motion.div>
-
-          {/* Small Floating Card 1 */}
-          <motion.div 
-            className="absolute top-40 left-0 w-56 bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-5 shadow-xl"
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ 
-              opacity: 1, 
-              y: [0, 20, 0]
-            }}
-            transition={{ 
-              opacity: { duration: 1, delay: 0.2 },
-              default: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }
-            }}
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center border border-amber-500/30">
-                <Star className="w-5 h-5 text-amber-400" fill="currentColor" />
-              </div>
-              <div>
-                <div className="text-white font-bold">4.9/5 Rating</div>
-                <div className="text-slate-400 text-xs">Based on 500+ reviews</div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Small Floating Card 2 */}
-          <motion.div 
-            className="absolute bottom-10 right-0 w-64 bg-[#0C1A2E]/80 backdrop-blur-xl border border-sky-500/30 rounded-3xl p-5 shadow-[0_0_30px_rgba(14,165,233,0.15)]"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ 
-              opacity: 1, 
-              y: [0, -10, 0]
-            }}
-            transition={{ 
-              opacity: { duration: 1, delay: 0.4 },
-              default: { duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
-            }}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-sky-400 font-bold text-sm uppercase tracking-wider">Live Status</span>
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            <h1 className="text-fluid-4xl xl:text-fluid-5xl font-extrabold text-white leading-[1.05] mb-4 sm:mb-6 tracking-tight">
+              Simplify Your <br className="hidden sm:block" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-400 to-sky-500">
+                Civic Needs.
               </span>
+            </h1>
+
+            <p className="text-fluid-base lg:text-fluid-lg text-slate-400 mb-8 sm:mb-10 max-w-xl font-medium leading-relaxed">
+              Experience the future of government services. Speed, integrity, and local expertise
+              seamlessly integrated into one premium digital destination.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 mb-10 sm:mb-12">
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Link
+                  to="/services"
+                  className="group relative inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-sky-500 text-white rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-[0_0_30px_rgba(14,165,233,0.3)] hover:shadow-[0_0_50px_rgba(14,165,233,0.5)] overflow-hidden touch-target"
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    Explore Services
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-sky-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </Link>
+              </motion.div>
+
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <a
+                  href="https://wa.me/919100080233"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 backdrop-blur-md touch-target"
+                >
+                  WhatsApp Us
+                </a>
+              </motion.div>
             </div>
-            <div className="space-y-3">
-              <div className="h-2 w-full bg-slate-700/50 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-sky-400 to-blue-500 w-3/4"></div>
+
+            <div className="flex flex-wrap items-center gap-4 sm:gap-8 text-sm font-semibold text-slate-500">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-emerald-500/80" />
+                100% Secure
               </div>
-              <div className="h-2 w-4/5 bg-slate-700/50 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-sky-400 to-blue-500 w-1/2"></div>
+              <div className="flex items-center gap-2">
+                <Zap className="w-5 h-5 text-amber-500/80" />
+                Fast Processing
               </div>
             </div>
-            <div className="mt-4 text-xs text-slate-400 font-medium">Processing 24+ applications today</div>
           </motion.div>
 
+          {/* Right Content - Premium Glass Illustration */}
+          <motion.div
+            className="lg:w-[45%] w-full relative"
+            initial={{ opacity: 0, scale: 0.9, x: 50 }}
+            animate={isInView ? { opacity: 1, scale: 1, x: 0 } : { opacity: 0, scale: 0.9, x: 50 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="relative">
+              {/* Outer Glow */}
+              <div className="absolute -inset-6 sm:-inset-10 bg-sky-500/10 rounded-full blur-[60px] sm:blur-[100px] pointer-events-none"></div>
+
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-sky-500/50 to-blue-500/50 rounded-2xl sm:rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                <img
+                  src="/11003.jpg"
+                  alt="Civic Hub"
+                  className="relative w-full h-auto rounded-2xl sm:rounded-[2.5rem] shadow-2xl border border-white/10 brightness-90 group-hover:brightness-100 transition duration-500"
+                />
+
+                {/* Floating Premium Card */}
+                <motion.div
+                  className="absolute -bottom-4 -left-4 sm:-bottom-8 sm:-left-8 bg-[#0C1A2E]/90 backdrop-blur-2xl p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/10 hidden sm:block"
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-sky-500/20 rounded-xl sm:rounded-2xl flex items-center justify-center border border-sky-500/30">
+                      <ShieldCheck className="w-5 h-5 sm:w-7 sm:h-7 text-sky-400" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] sm:text-xs text-sky-400 font-bold uppercase tracking-widest mb-0.5">Verified System</div>
+                      <div className="text-base sm:text-lg font-extrabold text-white">Bank-Grade Security</div>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
         </div>
-      </div>
 
-      {/* Seamless Gradient Transition into Stats Section */}
-      <div className="absolute bottom-0 w-full h-32 bg-gradient-to-b from-transparent to-[#0369A1] pointer-events-none z-20"></div>
+        {/* Service Icons Grid - Bottom */}
+        <motion.div
+          className="flex flex-wrap justify-center lg:justify-start gap-2 sm:gap-3 lg:gap-5 mt-12 sm:mt-16 lg:mt-24"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          {serviceIcons.map((item, index) => (
+            <motion.div
+              key={item.label}
+              className="group flex flex-col items-center gap-2 sm:gap-3 px-4 sm:px-6 py-4 sm:py-5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl sm:rounded-2xl transition-all duration-500 backdrop-blur-sm shadow-xl hover:-translate-y-1 sm:hover:-translate-y-2 touch-target"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+            >
+              <div className={`w-10 h-10 sm:w-12 lg:w-14 ${item.color} rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                {item.icon}
+              </div>
+              <span className="text-xs sm:text-sm text-slate-300 font-bold tracking-tight text-center">{item.label}</span>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
     </section>
   );
 }

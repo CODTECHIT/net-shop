@@ -45,8 +45,8 @@
   --radius: 0.875rem;
 
   /* Brand */
-  --navy: oklch(0.21 0.04 260);
-  /* #0F172A */
+  --navy: oklch(0.35 0.06 260);
+  /* Lighter Navy */
   --navy-foreground: oklch(0.98 0.005 250);
   --sky: oklch(0.78 0.13 230);
   /* #38BDF8 */
@@ -69,7 +69,7 @@
   --secondary: oklch(0.96 0.02 230);
   --secondary-foreground: oklch(0.21 0.04 260);
   --muted: oklch(0.96 0.01 240);
-  --muted-foreground: oklch(0.50 0.03 250);
+  --muted-foreground: oklch(0.5 0.03 250);
   --accent: oklch(0.78 0.17 70);
   --accent-foreground: oklch(0.21 0.04 260);
   --destructive: oklch(0.58 0.22 27);
@@ -86,6 +86,7 @@
 
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
@@ -93,6 +94,8 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1,
@@ -103,6 +106,51 @@
   h6 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
+  }
+}
+
+/* Responsive Fluid Typography Scale */
+@layer utilities {
+  .text-fluid-xs {
+    font-size: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  }
+  .text-fluid-sm {
+    font-size: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  }
+  .text-fluid-base {
+    font-size: clamp(0.9375rem, 0.85rem + 0.5vw, 1.125rem);
+  }
+  .text-fluid-lg {
+    font-size: clamp(1.125rem, 1rem + 0.625vw, 1.375rem);
+  }
+  .text-fluid-xl {
+    font-size: clamp(1.25rem, 1rem + 1.25vw, 1.75rem);
+  }
+  .text-fluid-2xl {
+    font-size: clamp(1.5rem, 1.25rem + 1.5vw, 2.25rem);
+  }
+  .text-fluid-3xl {
+    font-size: clamp(1.875rem, 1.5rem + 2vw, 3rem);
+  }
+  .text-fluid-4xl {
+    font-size: clamp(2.25rem, 1.75rem + 2.5vw, 3.75rem);
+  }
+  .text-fluid-5xl {
+    font-size: clamp(3rem, 2rem + 4vw, 5rem);
+  }
+
+  /* Minimum touch target enforcement */
+  .touch-target {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Safe area padding for mobile devices */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0);
   }
 }
 
@@ -124,7 +172,7 @@
     background:
       radial-gradient(60% 50% at 20% 20%, oklch(0.78 0.13 230 / 0.55), transparent 60%),
       radial-gradient(50% 50% at 80% 10%, oklch(0.68 0.16 235 / 0.45), transparent 60%),
-      radial-gradient(60% 60% at 70% 80%, oklch(0.78 0.17 70 / 0.30), transparent 60%),
+      radial-gradient(60% 60% at 70% 80%, oklch(0.78 0.17 70 / 0.3), transparent 60%),
       linear-gradient(180deg, oklch(0.97 0.02 230), oklch(0.99 0.005 240));
   }
 
@@ -167,7 +215,6 @@
 }
 
 @keyframes mesh-drift {
-
   0%,
   100% {
     transform: translate3d(0, 0, 0) scale(1);

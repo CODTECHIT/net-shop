@@ -1,9 +1,13 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary } from "cloudinary";
 
 // Configure Cloudinary
 // Note: We use process.env to ensure this only runs on the server side
 export function configureCloudinary() {
-  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+  if (
+    !process.env.CLOUDINARY_CLOUD_NAME ||
+    !process.env.CLOUDINARY_API_KEY ||
+    !process.env.CLOUDINARY_API_SECRET
+  ) {
     console.warn("Cloudinary environment variables are not fully configured.");
     return;
   }
@@ -18,7 +22,7 @@ export function configureCloudinary() {
 // Helper to upload base64 images
 export async function uploadImage(base64Image: string): Promise<string> {
   configureCloudinary();
-  
+
   try {
     const result = await cloudinary.uploader.upload(base64Image, {
       folder: "vayus_networks_products",

@@ -1,5 +1,5 @@
-import { motion, useInView } from 'motion/react';
-import { useRef } from 'react';
+import { motion, useInView } from "motion/react";
+import { useRef } from "react";
 
 export default function HowItWorks() {
   const ref = useRef(null);
@@ -9,12 +9,11 @@ export default function HowItWorks() {
     { num: "01", title: "WhatsApp Us", desc: "Send us a message with your requirement." },
     { num: "02", title: "Share Documents", desc: "Securely send the necessary papers online." },
     { num: "03", title: "We Process", desc: "Our experts handle the application & filing." },
-    { num: "04", title: "Done!", desc: "Receive your certificate or confirmation." }
+    { num: "04", title: "Done!", desc: "Receive your certificate or confirmation." },
   ];
 
   return (
     <section className="py-24 bg-[#0C1A2E] text-white relative overflow-hidden">
-      
       {/* Background Decorative */}
       <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-[#0369A1] rounded-full blur-[100px] opacity-30 pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-96 h-96 bg-[#0EA5E9] rounded-full blur-[100px] opacity-20 pointer-events-none"></div>

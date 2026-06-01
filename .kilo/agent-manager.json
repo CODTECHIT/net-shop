@@ -1,9 +1,21 @@
 {
-  "worktrees": {},
-  "sessions": {},
+  "worktrees": {
+    "wt-1780304732201-1": {
+      "branch": "coconut-yoke",
+      "path": "c:\\Users\\MAHAJAN ASHOK\\OneDrive\\Desktop\\net\\.kilo\\worktrees\\coconut-yoke",
+      "parentBranch": "main",
+      "createdAt": "2026-06-01T09:05:32.201Z",
+      "remote": "origin"
+    }
+  },
+  "sessions": {
+    "ses_17d919bb2ffeLpd9WNu6MBP57a": {
+      "worktreeId": "wt-1780304732201-1",
+      "createdAt": "2026-06-01T09:05:33.301Z"
+    }
+  },
   "tabOrder": {
-    "local": [
-      "pending:1"
-    ]
-  }
+    "local": ["pending:1"]
+  },
+  "worktreeOrder": ["wt-1780304732201-1"]
 }

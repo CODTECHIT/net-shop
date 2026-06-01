@@ -24,33 +24,37 @@ export function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-40 w-full transition-all ${scrolled ? "glass-nav shadow-[0_8px_30px_-20px_rgba(15,23,42,0.25)]" : "bg-transparent"
-        }`}
+      className={`sticky top-0 z-40 w-full transition-all ${
+        scrolled ? "glass-nav shadow-[0_8px_30px_-20px_rgba(15,23,42,0.25)]" : "bg-transparent"
+      }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
-          <span
-            className="grid h-10 w-10 place-items-center rounded-lg font-display text-lg font-extrabold tracking-tight text-white shadow-md"
-            style={{ background: "linear-gradient(135deg, var(--sky-deep), var(--navy))" }}
-          >
-            VN
-          </span>
-          <span className="flex flex-col leading-tight">
-            <span className="font-display text-lg font-bold text-navy">Vayu's Networks</span>
-            <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:py-4 lg:py-5">
+        <Link to="/" className="flex items-center gap-2 sm:gap-3 lg:gap-4" onClick={() => setOpen(false)}>
+          <div className="relative group flex-shrink-0">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-sky-400 to-blue-600 rounded-xl sm:rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+            <div
+              className="relative grid h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 place-items-center rounded-xl sm:rounded-2xl font-display text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white shadow-2xl"
+              style={{ background: "linear-gradient(135deg, var(--sky-deep), var(--navy))" }}
+            >
+              VN
+            </div>
+          </div>
+          <span className="flex flex-col leading-tight overflow-hidden">
+            <span className="font-display text-lg sm:text-xl lg:text-2xl font-black text-navy tracking-tight truncate max-w-[150px] sm:max-w-[200px] lg:max-w-none uppercase">Vayu's Networks</span>
+            <span className="text-[10px] sm:text-[11px] lg:text-[13px] uppercase tracking-[0.15em] sm:tracking-[0.2em] lg:tracking-[0.3em] font-black text-sky-600/90 mt-0.5">
               Kurnool · AP
             </span>
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-2 md:flex">
           {links.map((l) => (
             <Link
               key={l.to}
               to={l.to}
               activeOptions={{ exact: l.to === "/" }}
-              className="rounded-md px-3 py-2 text-sm font-semibold text-foreground/80 transition-colors hover:bg-secondary hover:text-navy"
-              activeProps={{ className: "text-sky-deep" }}
+              className="rounded-lg px-4 py-2.5 text-[15px] font-bold text-foreground/90 transition-all hover:bg-secondary hover:text-navy hover:scale-105"
+              activeProps={{ className: "text-sky-deep !text-sky-deep font-extrabold" }}
             >
               {l.label}
             </Link>
@@ -59,10 +63,10 @@ export function Navbar() {
             href={waLink("Hi, I need your services")}
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-3 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-white shadow-sm transition-transform hover:scale-105"
+            className="ml-4 inline-flex items-center gap-2 rounded-full px-6 py-3 text-base font-black text-white shadow-xl transition-all hover:scale-110 active:scale-95"
             style={{ backgroundColor: "var(--whatsapp)" }}
           >
-            <MessageCircle className="h-4 w-4" /> WhatsApp Us
+            <MessageCircle className="h-5 w-5" /> WhatsApp Us
           </a>
         </nav>
 

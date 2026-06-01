@@ -5,12 +5,7 @@ import tsConfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [
-    TanStackRouterVite(),
-    react(),
-    tailwindcss(),
-    tsConfigPaths(),
-  ],
+  plugins: [TanStackRouterVite(), react(), tailwindcss(), tsConfigPaths()],
   server: {
     proxy: {
       "/api": {
