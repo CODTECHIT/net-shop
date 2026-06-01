@@ -45,9 +45,9 @@ export default function Products() {
 
   return (
     <section id="products" className="py-24 bg-white relative overflow-hidden">
-      {/* Premium Background Decoration */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-sky-50 rounded-full blur-[120px] -z-0 opacity-50" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-50 rounded-full blur-[120px] -z-0 opacity-50" />
+      {/* Premium Background Decoration - Hidden on small screens for performance */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-sky-50 rounded-full blur-[120px] -z-0 opacity-50 hidden md:block" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-50 rounded-full blur-[120px] -z-0 opacity-50 hidden md:block" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-20">

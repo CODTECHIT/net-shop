@@ -5,8 +5,8 @@ import multer from "multer";
 import jwt from "jsonwebtoken";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-import { connectDB, Product } from "./db";
-import { uploadImage } from "./cloudinary";
+import { connectDB, Product } from "./db.js";
+import { uploadImage } from "./cloudinary.js";
 
 dotenv.config();
 
@@ -171,6 +171,16 @@ app.post("/api/admin/login", authLimiter, (req, res) => {
 
 app.post("/api/admin/verify", authenticateAdmin, (req, res) => {
   res.json({ success: true });
+});
+
+// Global Error Handler for Debugging
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error("UNHANDLED ERROR:", err);
+  res.status(500).json({ 
+    error: "Internal Server Error", 
+    message: err.message,
+    stack: process.env.NODE_ENV === "production" ? null : err.stack 
+  });
 });
 
 if (process.env.NODE_ENV !== "production") {

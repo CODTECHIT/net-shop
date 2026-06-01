@@ -34,33 +34,21 @@ export default function Hero() {
       {/* Premium Background Layer */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2070"
+          src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=60&w=1200"
           alt="Workspace Background"
           className="w-full h-full object-cover opacity-20"
+          loading="eager"
+          width="1200"
+          height="800"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0A0F1C] via-[#0A0F1C]/90 to-transparent"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0A0F1C]"></div>
       </div>
 
-      {/* Dynamic Animated Glows */}
+      {/* Dynamic Animated Glows - Optimized for performance */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.15, 0.3, 0.15],
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-[10%] -right-[5%] w-[600px] h-[600px] rounded-full bg-sky-500/20 blur-[120px]"
-        />
-        <motion.div
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.1, 0.2, 0.1],
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-[10%] left-[10%] w-[500px] h-[500px] rounded-full bg-blue-600/10 blur-[100px]"
-        />
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 mix-blend-overlay"></div>
+        <div className="absolute -top-[10%] -right-[5%] w-[400px] h-[400px] rounded-full bg-sky-500/10 blur-[100px] hidden md:block" />
+        <div className="absolute bottom-[10%] left-[10%] w-[300px] h-[300px] rounded-full bg-blue-600/5 blur-[80px] hidden md:block" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-16 sm:py-20 lg:py-24">
@@ -148,6 +136,8 @@ export default function Hero() {
                   src="/11003.jpg"
                   alt="Civic Hub"
                   className="relative w-full h-auto rounded-2xl sm:rounded-[2.5rem] shadow-2xl border border-white/10 brightness-90 group-hover:brightness-100 transition duration-500"
+                  width="800"
+                  height="600"
                 />
 
                 {/* Floating Premium Card */}

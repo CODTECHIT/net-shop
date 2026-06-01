@@ -26,9 +26,9 @@ export default function Navbar() {
 
   return (
     <nav 
-      className={`sticky top-0 z-50 transition-all duration-500 ${
+      className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? "bg-[#020617]/80 backdrop-blur-xl border-b border-white/5 py-2" 
+          ? "bg-[#020617]/90 md:backdrop-blur-xl border-b border-white/5 py-2" 
           : "bg-[#020617] py-4"
       }`}
     >
@@ -93,6 +93,7 @@ export default function Navbar() {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
               className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white transition-all hover:bg-white/10"
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

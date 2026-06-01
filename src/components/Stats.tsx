@@ -56,8 +56,8 @@ export default function Stats() {
       ref={ref}
       className="w-full bg-[#0A0F1C] py-16 sm:py-20 lg:py-24 relative overflow-hidden"
     >
-      {/* Premium Background Elements */}
-      <div className="absolute inset-0 pointer-events-none">
+      {/* Premium Background Elements - Hidden on mobile for performance */}
+      <div className="absolute inset-0 pointer-events-none hidden md:block">
         <div className="absolute top-0 left-1/4 w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-sky-500/10 rounded-full blur-[80px] sm:blur-[120px]"></div>
         <div className="absolute bottom-0 right-1/4 w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-blue-600/10 rounded-full blur-[80px] sm:blur-[120px]"></div>
       </div>
