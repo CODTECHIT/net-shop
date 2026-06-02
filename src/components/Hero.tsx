@@ -18,12 +18,12 @@ export default function Hero() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const serviceIcons = [
-    { icon: <FileText className="w-6 h-6" />, label: "ID Cards", color: "bg-sky-500" },
-    { icon: <ScrollText className="w-6 h-6" />, label: "Certificates", color: "bg-purple-500" },
-    { icon: <Home className="w-6 h-6" />, label: "Property", color: "bg-emerald-500" },
-    { icon: <Car className="w-6 h-6" />, label: "Transport", color: "bg-amber-500" },
-    { icon: <Building2 className="w-6 h-6" />, label: "Municipal", color: "bg-rose-500" },
-    { icon: <Landmark className="w-6 h-6" />, label: "Registration", color: "bg-indigo-500" },
+    { icon: <FileText className="w-6 h-6" />, label: "ID Cards", color: "bg-sky-500", id: "id-cards" },
+    { icon: <ScrollText className="w-6 h-6" />, label: "Certificates", color: "bg-purple-500", id: "certificates" },
+    { icon: <Home className="w-6 h-6" />, label: "Property", color: "bg-emerald-500", id: "property" },
+    { icon: <Car className="w-6 h-6" />, label: "Transport", color: "bg-amber-500", id: "transport" },
+    { icon: <Building2 className="w-6 h-6" />, label: "Municipal", color: "bg-rose-500", id: "municipal" },
+    { icon: <Landmark className="w-6 h-6" />, label: "Registration", color: "bg-indigo-500", id: "register" },
   ];
 
   return (
@@ -76,10 +76,24 @@ export default function Hero() {
               </span>
             </h1>
 
-            <p className="text-fluid-base lg:text-fluid-lg text-slate-400 mb-8 sm:mb-10 max-w-xl font-medium leading-relaxed">
+            <p className="text-fluid-base lg:text-fluid-lg text-slate-400 mb-6 max-w-xl font-medium leading-relaxed">
               Experience the future of government services. Speed, integrity, and local expertise
               seamlessly integrated into one premium digital destination.
             </p>
+
+            <div className="inline-flex items-center gap-3 px-4 py-3 sm:px-5 sm:py-3.5 rounded-2xl bg-gradient-to-r from-sky-500/10 to-blue-500/5 border border-sky-500/20 mb-8 sm:mb-10 backdrop-blur-md shadow-[0_4px_20px_rgba(14,165,233,0.15)]">
+              <div className="w-10 h-10 rounded-full bg-sky-500/20 flex items-center justify-center shrink-0">
+                <Home className="w-5 h-5 text-sky-400" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sky-300 font-bold text-base sm:text-lg leading-tight">
+                  Any Online Service at door steps.
+                </span>
+                <span className="text-sky-400/80 text-xs sm:text-sm font-medium mt-0.5">
+                  We collect info & deliver to your home
+                </span>
+              </div>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 mb-10 sm:mb-12">
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
@@ -171,15 +185,21 @@ export default function Hero() {
           {serviceIcons.map((item, index) => (
             <motion.div
               key={item.label}
-              className="group flex flex-col items-center gap-2 sm:gap-3 px-4 sm:px-6 py-4 sm:py-5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl sm:rounded-2xl transition-all duration-500 backdrop-blur-sm shadow-xl hover:-translate-y-1 sm:hover:-translate-y-2 touch-target"
+              className="flex"
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
             >
-              <div className={`w-10 h-10 sm:w-12 lg:w-14 ${item.color} rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
-                {item.icon}
-              </div>
-              <span className="text-xs sm:text-sm text-slate-300 font-bold tracking-tight text-center">{item.label}</span>
+              <Link
+                to="/services"
+                hash={item.id}
+                className="group flex flex-col items-center gap-2 sm:gap-3 px-4 sm:px-6 py-4 sm:py-5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl sm:rounded-2xl transition-all duration-500 backdrop-blur-sm shadow-xl hover:-translate-y-1 sm:hover:-translate-y-2 touch-target w-full"
+              >
+                <div className={`w-10 h-10 sm:w-12 lg:w-14 ${item.color} rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                  {item.icon}
+                </div>
+                <span className="text-xs sm:text-sm text-slate-300 font-bold tracking-tight text-center">{item.label}</span>
+              </Link>
             </motion.div>
           ))}
         </motion.div>
