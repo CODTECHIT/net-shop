@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+import SEO from "@/components/SEO";
 import { 
   ShieldCheck, 
   LogIn, 
@@ -212,6 +213,7 @@ function AdminPage() {
   if (isVerifying) {
     return (
       <div className="fixed inset-0 bg-[#020617] flex items-center justify-center">
+        <SEO title="Admin Dashboard | Vayu's Networks" description="Authorized personnel access only." robots="noindex, nofollow" />
         <Loader2 className="w-10 h-10 text-sky-500 animate-spin" />
       </div>
     );
@@ -220,6 +222,7 @@ function AdminPage() {
   if (!token) {
     return (
       <div className="fixed inset-0 bg-[#020617] flex items-center justify-center p-4">
+        <SEO title="Admin Dashboard | Vayu's Networks" description="Authorized personnel access only." robots="noindex, nofollow" />
         <div className="w-full max-w-md">
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
@@ -246,7 +249,7 @@ function AdminPage() {
                 <button
                   type="submit"
                   disabled={isLoggingIn}
-                  className="w-full bg-white text-[#020617] font-black py-4 rounded-2xl transition-all flex items-center justify-center gap-2 hover:bg-sky-400 hover:text-white disabled:opacity-50 shadow-xl shadow-sky-500/10"
+                  className="w-full bg-white text-[#020617] font-black py-4 rounded-2xl transition-all flex items-center justify-center gap-2 hover:bg-sky-400 hover:text-white disabled:opacity-50 shadow-xl shadow-sky-500/10 cursor-pointer"
                 >
                   {isLoggingIn ? <Loader2 className="w-6 h-6 animate-spin" /> : "AUTHENTICATE"}
                 </button>
@@ -260,6 +263,7 @@ function AdminPage() {
 
   return (
     <div className="fixed inset-0 bg-[#020617] text-slate-200 overflow-hidden flex flex-col font-sans">
+      <SEO title="Admin Dashboard | Vayu's Networks" description="Authorized personnel access only." robots="noindex, nofollow" />
       {/* Sidebar-style Top Header */}
       <header className="h-20 bg-[#0f172a] border-b border-white/5 flex items-center justify-between px-8 shrink-0">
         <div className="flex items-center gap-4">

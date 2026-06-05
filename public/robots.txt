@@ -1,2 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/admin
+
+Sitemap: https://vayusnetworks.com/sitemap.xml
+

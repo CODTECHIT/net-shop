@@ -44,7 +44,7 @@ export default function About() {
           <h2 className="text-sm font-bold text-[#0369A1] tracking-widest uppercase mb-3">
             Who We Are
           </h2>
-          <h3 className="text-4xl md:text-5xl font-extrabold text-[#0C1A2E] mb-6">
+          <h3 className="text-4xl md:text-5xl font-extrabold text-zinc-900 mb-6">
             Your Trusted Partner in Kurnool
           </h3>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
@@ -70,7 +70,7 @@ export default function About() {
                 transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
               >
                 <div className="mb-4">{item.icon}</div>
-                <h4 className="text-xl font-bold text-[#0C1A2E] mb-2">{item.title}</h4>
+                <h4 className="text-xl font-bold text-zinc-900 mb-2">{item.title}</h4>
                 <p className="text-gray-500 text-sm">{item.desc}</p>
               </motion.div>
             ))}
