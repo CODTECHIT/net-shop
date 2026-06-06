@@ -197,7 +197,7 @@ export default function Services({ limit }: { limit?: number }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-10 sm:mb-16">
           <h2 className="text-[#38BDF8] font-bold tracking-wider uppercase mb-2 text-fluid-sm">Our Services</h2>
-          <h3 className="text-fluid-3xl lg:text-fluid-4xl font-extrabold text-zinc-900 mb-4 sm:mb-6">
+          <h3 className="text-fluid-3xl lg:text-fluid-4xl font-extrabold text-[#0C1A2E] mb-4 sm:mb-6">
             Everything Handled Under One Roof
           </h3>
           <p className="text-gray-600 text-fluid-base max-w-2xl mx-auto px-4">
@@ -245,7 +245,7 @@ export default function Services({ limit }: { limit?: number }) {
           {limit && (
             <Link
               to="/services"
-              className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl sm:rounded-lg font-bold text-base sm:text-lg transition-colors shadow-lg shadow-zinc-900/20 touch-target"
+              className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-[#0C1A2E] hover:bg-sky-900 text-white rounded-xl sm:rounded-lg font-bold text-base sm:text-lg transition-colors shadow-lg shadow-sky-900/20 touch-target"
             >
               Browse All Services <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
             </Link>

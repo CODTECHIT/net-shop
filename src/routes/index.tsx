@@ -25,7 +25,7 @@ function RouteComponent() {
         keywords="online services Kurnool, government certificates Kurnool, property registration Kurnool, APSPDCL bill payment, transport services AP, doorstep online services Kurnool, Vayu's Networks"
       />
       <Hero />
-      <Suspense fallback={<div className="h-40 bg-slate-50 animate-pulse" />}>
+      <Suspense fallback={<div className="h-40 bg-[#0A0F1C] animate-pulse" />}>
         <Stats />
         <About />
         <Services limit={8} />

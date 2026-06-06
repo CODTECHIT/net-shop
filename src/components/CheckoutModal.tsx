@@ -211,7 +211,7 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl bg-white border-slate-100 text-slate-800 rounded-[2.5rem] p-0 overflow-hidden shadow-2xl">
+      <DialogContent className="max-w-2xl bg-[#0C1A2E] border-white/10 text-white rounded-[2.5rem] p-0 overflow-hidden shadow-2xl">
         <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent pointer-events-none" />
         
         <AnimatePresence mode="wait">
@@ -224,43 +224,43 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
               className="p-8 grid grid-cols-1 md:grid-cols-12 gap-8"
             >
               {/* Product Info / Summary Column */}
-              <div className="md:col-span-5 flex flex-col justify-between border-b md:border-b-0 md:border-r border-slate-100 pb-6 md:pb-0 md:pr-6">
+              <div className="md:col-span-5 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/5 pb-6 md:pb-0 md:pr-6">
                 <div>
                   <DialogHeader className="mb-6">
-                    <DialogTitle className="text-2xl font-black tracking-tight text-slate-900 flex items-center gap-2">
-                      <ShoppingBag className="w-5 h-5 text-sky-600" /> SECURE CHECKOUT
+                    <DialogTitle className="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                      <ShoppingBag className="w-5 h-5 text-sky-450 text-sky-450" /> SECURE CHECKOUT
                     </DialogTitle>
-                    <DialogDescription className="text-slate-500 font-medium text-xs uppercase tracking-wider">
+                    <DialogDescription className="text-slate-400 font-medium text-xs uppercase tracking-wider">
                       Purchase direct via Razorpay
                     </DialogDescription>
                   </DialogHeader>
 
-                  <div className="bg-slate-50 p-4 rounded-3xl border border-slate-100 flex gap-4 items-center">
-                    <div className="w-16 h-16 rounded-xl bg-white overflow-hidden border border-slate-200/50 shrink-0">
+                  <div className="bg-[#0A0F1C] p-4 rounded-3xl border border-white/5 flex gap-4 items-center">
+                    <div className="w-16 h-16 rounded-xl bg-white/5 overflow-hidden border border-white/10 shrink-0">
                       <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="min-w-0">
-                      <h4 className="font-bold text-slate-800 text-sm truncate uppercase tracking-tight">{product.name}</h4>
-                      <p className="text-sky-600 font-bold mt-1 text-sm">₹{product.price}</p>
+                      <h4 className="font-bold text-white text-sm truncate uppercase tracking-tight">{product.name}</h4>
+                      <p className="text-sky-400 font-bold mt-1 text-sm">₹{product.price}</p>
                     </div>
                   </div>
 
                   {/* Quantity Selector */}
                   <div className="mt-6">
-                    <label className="text-[10px] font-black text-sky-650 uppercase tracking-widest block mb-2 text-sky-600">Quantity</label>
+                    <label className="text-[10px] font-black text-sky-400 uppercase tracking-widest block mb-2">Quantity</label>
                     <div className="flex items-center gap-3">
                       <button 
                         type="button" 
                         onClick={decrementQty}
-                        className="w-10 h-10 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 flex items-center justify-center transition-all active:scale-90"
+                        className="w-10 h-10 bg-[#0A0F1C] hover:bg-white/5 text-white border border-white/10 flex items-center justify-center transition-all active:scale-90"
                       >
                         <Minus className="w-4 h-4" />
                       </button>
-                      <span className="text-lg font-black text-slate-900 w-8 text-center">{quantity}</span>
+                      <span className="text-lg font-black text-white w-8 text-center">{quantity}</span>
                       <button 
                         type="button" 
                         onClick={incrementQty}
-                        className="w-10 h-10 bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 flex items-center justify-center transition-all active:scale-90"
+                        className="w-10 h-10 bg-[#0A0F1C] hover:bg-white/5 text-white border border-white/10 flex items-center justify-center transition-all active:scale-90"
                       >
                         <Plus className="w-4 h-4" />
                       </button>
@@ -268,12 +268,12 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                   </div>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-slate-100">
+                <div className="mt-8 pt-6 border-t border-white/5">
                   <div className="flex items-baseline justify-between mb-2">
-                    <span className="text-xs font-bold text-slate-500">Total Price</span>
-                    <span className="text-2xl font-black text-slate-900">₹{totalAmount}</span>
+                    <span className="text-xs font-bold text-slate-400">Total Price</span>
+                    <span className="text-2xl font-black text-white">₹{totalAmount}</span>
                   </div>
-                  <p className="text-[10px] text-slate-500 font-medium">VAT & transaction fees included</p>
+                  <p className="text-[10px] text-slate-400 font-medium">VAT & transaction fees included</p>
                 </div>
               </div>
 
@@ -281,8 +281,8 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
               <div className="md:col-span-7 space-y-4">
                 <form onSubmit={handlePay} className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-sky-600 uppercase tracking-widest ml-1 flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-sky-600/75" /> Full Name
+                    <label className="text-[10px] font-black text-sky-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-sky-400" /> Full Name
                     </label>
                     <input
                       type="text"
@@ -290,15 +290,15 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                       value={formData.name}
                       onChange={handleInputChange}
                       placeholder="e.g. Ashok Mahajan"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all text-sm font-semibold focus:bg-white"
+                      className="w-full bg-[#0A0F1C] border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all text-sm font-semibold focus:bg-white/5"
                       required
                     />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-sky-600 uppercase tracking-widest ml-1 flex items-center gap-1.5">
-                        <Mail className="w-3.5 h-3.5 text-sky-600/75" /> Email
+                      <label className="text-[10px] font-black text-sky-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
+                        <Mail className="w-3.5 h-3.5 text-sky-400" /> Email
                       </label>
                       <input
                         type="email"
@@ -306,14 +306,14 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="recipient@domain.com"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all text-xs font-semibold focus:bg-white"
+                        className="w-full bg-[#0A0F1C] border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all text-xs font-semibold focus:bg-white/5"
                         required
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-sky-600 uppercase tracking-widest ml-1 flex items-center gap-1.5">
-                        <Phone className="w-3.5 h-3.5 text-sky-600/75" /> Contact Number
+                      <label className="text-[10px] font-black text-sky-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
+                        <Phone className="w-3.5 h-3.5 text-sky-400" /> Contact Number
                       </label>
                       <input
                         type="tel"
@@ -321,22 +321,22 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="Mobile Number"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all text-xs font-semibold focus:bg-white"
+                        className="w-full bg-[#0A0F1C] border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all text-xs font-semibold focus:bg-white/5"
                         required
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-sky-600 uppercase tracking-widest ml-1 flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-sky-600/75" /> Shipping Address
+                    <label className="text-[10px] font-black text-sky-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-sky-400" /> Shipping Address
                     </label>
                     <textarea
                       name="address"
                       value={formData.address}
                       onChange={handleInputChange}
                       placeholder="Street, City, Zipcode, State"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all h-20 resize-none text-xs font-semibold leading-relaxed focus:bg-white"
+                      className="w-full bg-[#0A0F1C] border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all h-20 resize-none text-xs font-semibold leading-relaxed focus:bg-white/5"
                       required
                     />
                   </div>
@@ -360,10 +360,10 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
               exit={{ opacity: 0, scale: 0.95 }}
               className="p-16 flex flex-col items-center justify-center text-center gap-6"
             >
-              <Loader2 className="w-12 h-12 text-sky-600 animate-spin" />
+              <Loader2 className="w-12 h-12 text-sky-405 animate-spin" />
               <div>
-                <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tight">PROCESSING TRANSACTION</h3>
-                <p className="text-slate-500 font-medium text-sm">Please do not refresh or close the modal window</p>
+                <h3 className="text-xl font-black text-white mb-2 tracking-tight">PROCESSING TRANSACTION</h3>
+                <p className="text-slate-400 font-medium text-sm">Please do not refresh or close the modal window</p>
               </div>
             </motion.div>
           )}
@@ -377,21 +377,21 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
               className="p-16 flex flex-col items-center justify-center text-center gap-6"
             >
               <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/20">
-                <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+                <CheckCircle2 className="w-10 h-10 text-emerald-400" />
               </div>
               <div>
-                <h3 className="text-2xl font-black text-slate-900 mb-2 tracking-tight">ORDER PLACED SUCCESSFULLY!</h3>
-                <p className="text-slate-500 text-sm font-medium mb-6">Payment verified and logged.</p>
-                <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 max-w-sm mx-auto text-left font-mono text-xs text-slate-600 space-y-2">
-                  <div className="flex justify-between"><span className="text-slate-500">Product:</span> <span className="font-semibold text-slate-900 truncate max-w-[200px]">{product.name}</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Quantity:</span> <span className="font-semibold text-slate-900">{quantity}</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Amount Paid:</span> <span className="font-semibold text-sky-600">₹{totalAmount}</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Payment ID:</span> <span className="font-semibold text-slate-900">{paymentId}</span></div>
+                <h3 className="text-2xl font-black text-white mb-2 tracking-tight">ORDER PLACED SUCCESSFULLY!</h3>
+                <p className="text-slate-400 text-sm font-medium mb-6">Payment verified and logged.</p>
+                <div className="bg-[#0A0F1C] border border-white/5 rounded-2xl p-4 max-w-sm mx-auto text-left font-mono text-xs text-slate-350 space-y-2">
+                  <div className="flex justify-between"><span className="text-slate-500">Product:</span> <span className="font-semibold text-white truncate max-w-[200px]">{product.name}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Quantity:</span> <span className="font-semibold text-white">{quantity}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Amount Paid:</span> <span className="font-semibold text-sky-400">₹{totalAmount}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Payment ID:</span> <span className="font-semibold text-white">{paymentId}</span></div>
                 </div>
               </div>
               <button 
                 onClick={onClose}
-                className="bg-slate-900 text-white font-black px-8 py-3 rounded-xl hover:bg-slate-800 transition-all shadow-md active:scale-95 text-sm"
+                className="bg-white text-[#020617] font-black px-8 py-3 rounded-xl hover:bg-slate-200 transition-all shadow-md active:scale-95 text-sm"
               >
                 CLOSE WINDOW
               </button>
@@ -407,11 +407,11 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
               className="p-16 flex flex-col items-center justify-center text-center gap-6"
             >
               <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20">
-                <AlertTriangle className="w-10 h-10 text-red-500" />
+                <AlertTriangle className="w-10 h-10 text-red-400" />
               </div>
               <div>
-                <h3 className="text-2xl font-black text-slate-900 mb-2 tracking-tight">TRANSACTION FAILED</h3>
-                <p className="text-slate-500 text-sm font-medium mb-4">{errorMessage || "Verification could not be processed."}</p>
+                <h3 className="text-2xl font-black text-white mb-2 tracking-tight">TRANSACTION FAILED</h3>
+                <p className="text-slate-400 text-sm font-medium mb-4">{errorMessage || "Verification could not be processed."}</p>
               </div>
               <div className="flex gap-4">
                 <button 
@@ -422,7 +422,7 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                 </button>
                 <button 
                   onClick={onClose}
-                  className="bg-slate-100 border border-slate-200 text-slate-600 font-black px-6 py-3 rounded-xl hover:bg-slate-200 hover:text-slate-800 transition-all text-sm active:scale-95"
+                  className="bg-[#0A0F1C] border border-white/10 text-slate-300 font-black px-6 py-3 rounded-xl hover:bg-white/5 transition-all text-sm active:scale-95"
                 >
                   CANCEL
                 </button>

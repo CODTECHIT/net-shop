@@ -18,7 +18,7 @@ function ServicesPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-20">
           <h1 className="text-[#38BDF8] font-bold tracking-wider uppercase mb-3">All Services</h1>
-          <h2 className="text-4xl md:text-6xl font-extrabold text-zinc-900 mb-6">
+          <h2 className="text-4xl md:text-6xl font-extrabold text-[#0C1A2E] mb-6">
             Browse By Category
           </h2>
           <p className="text-gray-600 text-xl max-w-2xl mx-auto mb-10">

@@ -49,7 +49,7 @@ export default function WhyChooseUs() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-[#38BDF8] font-bold tracking-wider uppercase mb-2">Why Choose Us</h2>
-          <h3 className="text-4xl md:text-5xl font-extrabold text-zinc-900 mb-6">
+          <h3 className="text-4xl md:text-5xl font-extrabold text-[#0C1A2E] mb-6">
             The Best Choice in Kurnool
           </h3>
           <p className="text-gray-600">
@@ -71,7 +71,7 @@ export default function WhyChooseUs() {
                 {item.icon}
               </div>
               <div>
-                <h4 className="text-xl font-bold text-zinc-900 mb-2">{item.title}</h4>
+                <h4 className="text-xl font-bold text-[#0C1A2E] mb-2">{item.title}</h4>
                 <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
               </div>
             </motion.div>
