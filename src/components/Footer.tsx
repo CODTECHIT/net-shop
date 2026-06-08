@@ -34,9 +34,8 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-4">
               <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#"
+                onClick={(e) => e.preventDefault()}
                 className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-sky-100/70 hover:bg-sky-500 hover:text-white hover:border-sky-500 transition-all"
               >
                 <Instagram className="w-4 h-4" />
@@ -50,9 +49,8 @@ export default function Footer() {
                 <Youtube className="w-4 h-4" />
               </a>
               <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#"
+                onClick={(e) => e.preventDefault()}
                 className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-sky-100/70 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all"
               >
                 <Facebook className="w-4 h-4" />

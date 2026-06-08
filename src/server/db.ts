@@ -33,10 +33,10 @@ export async function connectDB() {
 
 // Product Schema
 const productSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  description: { type: String },
-  price: { type: Number, required: true },
-  quantity: { type: Number, required: true, default: 0 }, // Changed to Number for numeric stock count
+  name: { type: String, required: true, maxlength: 200, trim: true },
+  description: { type: String, maxlength: 2000, trim: true },
+  price: { type: Number, required: true, min: 0 },
+  quantity: { type: Number, required: true, default: 0, min: 0 }, // Changed to Number for numeric stock count
   imageUrl: { type: String, required: true },
   clicks: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now, index: true },
@@ -47,25 +47,35 @@ export const Product = mongoose.models.Product || mongoose.model("Product", prod
 
 // Payment Schema
 const paymentSchema = new mongoose.Schema({
-  razorpayOrderId: { type: String, required: true, unique: true },
-  razorpayPaymentId: { type: String },
+  razorpayOrderId: { type: String, required: true, unique: true, index: true },
+  razorpayPaymentId: { type: String, index: true },
   razorpaySignature: { type: String },
-  productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
-  productName: { type: String, required: true },
-  amount: { type: Number, required: true },
-  quantity: { type: Number, required: true, default: 1 },
-  customerName: { type: String, required: true },
-  customerEmail: { type: String, required: true },
-  customerPhone: { type: String, required: true },
-  shippingAddress: { type: String, required: true },
+  productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", index: true },
+  productName: { type: String, required: true, maxlength: 200 },
+  amount: { type: Number, required: true, min: 0 },
+  quantity: { type: Number, required: true, default: 1, min: 1 },
+  customerName: { type: String, required: true, maxlength: 200, trim: true },
+  customerEmail: { type: String, required: true, maxlength: 320, trim: true },
+  customerPhone: { type: String, required: true, maxlength: 20, trim: true },
+  shippingAddress: { type: String, required: true, maxlength: 1000, trim: true },
   status: { 
     type: String, 
-    enum: ["pending", "paid", "failed", "processing", "shipped", "delivered", "refunded", "cancelled"], 
+    enum: ["pending", "paid", "failed", "processing", "shipped", "delivered", "refund_processing", "refunded", "cancelled"], 
     default: "pending",
     index: true 
   },
+  statusHistory: [{
+    status: { type: String, required: true },
+    changedAt: { type: Date, default: Date.now },
+    reason: { type: String }
+  }],
   createdAt: { type: Date, default: Date.now, index: true },
 });
+
+// Compound indexes for common queries
+paymentSchema.index({ productId: 1, customerEmail: 1, status: 1, createdAt: -1 });
+paymentSchema.index({ customerEmail: 1, createdAt: -1 });
+paymentSchema.index({ status: 1, createdAt: 1 }); // Index for abandoned cart recovery
 
 export const Payment = mongoose.models.Payment || mongoose.model("Payment", paymentSchema);
 

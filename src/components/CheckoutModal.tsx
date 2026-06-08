@@ -93,11 +93,14 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (step === "processing") return;
     
     // Basic validation
     if (!formData.name.trim()) return toast.error("Please enter your name");
     if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Please enter a valid email");
-    if (!formData.phone.trim() || formData.phone.length < 10) return toast.error("Please enter a valid contact number");
+    if (!formData.phone.trim() || !/^[6-9]\d{9}$/.test(formData.phone.trim())) {
+      return toast.error("Please enter a valid 10-digit Indian mobile number");
+    }
     if (!formData.address.trim()) return toast.error("Please enter shipping address");
 
     setStep("processing");
@@ -289,7 +292,7 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="e.g. Ashok Mahajan"
+                      placeholder="e.g. your name "
                       className="w-full bg-[#0A0F1C] border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all text-sm font-semibold focus:bg-white/5"
                       required
                     />

@@ -3,23 +3,26 @@ import { useState, useEffect } from "react";
 import SEO from "@/components/SEO";
 import { 
   ShieldCheck, 
-  LogIn, 
   Upload, 
   Plus, 
   Image as ImageIcon, 
   Loader2, 
-  X, 
   LayoutDashboard, 
   Package, 
   MousePointer2, 
   Trash2,
   ExternalLink,
-  LogOut
+  LogOut,
+  CreditCard,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  RefreshCw,
+  Calendar
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
-
-const TOKEN_KEY = "vn_admin_token";
 
 export const Route = createFileRoute("/admin/admin")({
   component: AdminPage,
@@ -36,14 +39,34 @@ interface Product {
   createdAt: string;
 }
 
+interface PaymentRecord {
+  _id: string;
+  razorpayOrderId: string;
+  razorpayPaymentId?: string;
+  razorpaySignature?: string;
+  productId?: string;
+  productName: string;
+  amount: number;
+  quantity: number;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  shippingAddress: string;
+  status: string;
+  createdAt: string;
+}
+
 function AdminPage() {
-  const [token, setToken] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [password, setPassword] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isVerifying, setIsVerifying] = useState(true);
+  
+  const [activeTab, setActiveTab] = useState<"inventory" | "orders">("inventory");
+  
+  // Product state
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
-
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -54,36 +77,38 @@ function AdminPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Orders/Payments state
+  const [payments, setPayments] = useState<PaymentRecord[]>([]);
+  const [isLoadingPayments, setIsLoadingPayments] = useState(false);
+  const [paymentsPage, setPaymentsPage] = useState(1);
+
+  // Verify auth session cookie on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem(TOKEN_KEY);
-    if (storedToken) {
-      verifyToken(storedToken);
-    } else {
-      setIsVerifying(false);
-    }
+    verifySession();
   }, []);
 
   useEffect(() => {
-    if (token) {
-      fetchProducts();
+    if (isAuthenticated) {
+      if (activeTab === "inventory") {
+        fetchProducts();
+      } else {
+        fetchPayments();
+      }
     }
-  }, [token]);
+  }, [isAuthenticated, activeTab, paymentsPage]);
 
-  const verifyToken = async (storedToken: string) => {
+  const verifySession = async () => {
     try {
       const res = await fetch("/api/admin/verify", {
         method: "POST",
-        headers: {
-          "Authorization": `Bearer ${storedToken}`,
-        },
       });
       if (res.ok) {
-        setToken(storedToken);
+        setIsAuthenticated(true);
       } else {
-        localStorage.removeItem(TOKEN_KEY);
+        setIsAuthenticated(false);
       }
     } catch {
-      localStorage.removeItem(TOKEN_KEY);
+      setIsAuthenticated(false);
     } finally {
       setIsVerifying(false);
     }
@@ -92,7 +117,7 @@ function AdminPage() {
   const fetchProducts = async () => {
     setIsLoadingProducts(true);
     try {
-      const res = await fetch("/api/products");
+      const res = await fetch("/api/products?limit=100");
       const data = await res.json();
       if (res.ok) {
         setProducts(data);
@@ -101,6 +126,21 @@ function AdminPage() {
       toast.error("Failed to load products");
     } finally {
       setIsLoadingProducts(false);
+    }
+  };
+
+  const fetchPayments = async () => {
+    setIsLoadingPayments(true);
+    try {
+      const res = await fetch(`/api/admin/payments?page=${paymentsPage}&limit=40`);
+      const data = await res.json();
+      if (res.ok) {
+        setPayments(data);
+      }
+    } catch (err) {
+      toast.error("Failed to load payment history");
+    } finally {
+      setIsLoadingPayments(false);
     }
   };
 
@@ -118,8 +158,7 @@ function AdminPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        setToken(data.token);
-        localStorage.setItem(TOKEN_KEY, data.token);
+        setIsAuthenticated(true);
         setPassword("");
         toast.success("Welcome to Admin Hub");
       } else {
@@ -132,10 +171,14 @@ function AdminPage() {
     }
   };
 
-  const handleLogout = () => {
-    setToken(null);
-    localStorage.removeItem(TOKEN_KEY);
-    toast.info("Session closed");
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+      setIsAuthenticated(false);
+      toast.info("Session closed");
+    } catch (err) {
+      toast.error("Logout request failed");
+    }
   };
 
   const handleDeleteProduct = async (id: string) => {
@@ -144,9 +187,6 @@ function AdminPage() {
     try {
       const res = await fetch(`/api/products/${id}`, {
         method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
       });
 
       if (res.ok) {
@@ -176,7 +216,7 @@ function AdminPage() {
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!imageFile || !token) return;
+    if (!imageFile) return;
 
     setIsSubmitting(true);
     const form = new FormData();
@@ -189,7 +229,6 @@ function AdminPage() {
     try {
       const res = await fetch("/api/products", {
         method: "POST",
-        headers: { "Authorization": `Bearer ${token}` },
         body: form,
       });
 
@@ -210,6 +249,49 @@ function AdminPage() {
     }
   };
 
+  const handleUpdateStatus = async (paymentId: string, newStatus: string) => {
+    try {
+      const res = await fetch(`/api/admin/payments/${paymentId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`Order status updated to ${newStatus}`);
+        fetchPayments();
+        fetchProducts();
+      } else {
+        toast.error(data.error || "Status update failed");
+      }
+    } catch {
+      toast.error("Network error updating status");
+    }
+  };
+
+  const handleRefund = async (paymentId: string) => {
+    const reason = prompt("Enter the reason for refund:") || "Admin initiated refund";
+    if (!confirm("Are you sure you want to issue a full refund via Razorpay for this order?")) return;
+
+    try {
+      const res = await fetch(`/api/admin/payments/${paymentId}/refund`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Refund processed successfully!");
+        fetchPayments();
+        fetchProducts();
+      } else {
+        toast.error(data.error || "Refund failed");
+      }
+    } catch {
+      toast.error("Network error executing refund");
+    }
+  };
+
   if (isVerifying) {
     return (
       <div className="fixed inset-0 bg-[#020617] flex items-center justify-center">
@@ -219,7 +301,7 @@ function AdminPage() {
     );
   }
 
-  if (!token) {
+  if (!isAuthenticated) {
     return (
       <div className="fixed inset-0 bg-[#020617] flex items-center justify-center p-4">
         <SEO title="Admin Dashboard | Vayu's Networks" description="Authorized personnel access only." robots="noindex, nofollow" />
@@ -264,7 +346,8 @@ function AdminPage() {
   return (
     <div className="fixed inset-0 bg-[#020617] text-slate-200 overflow-hidden flex flex-col font-sans">
       <SEO title="Admin Dashboard | Vayu's Networks" description="Authorized personnel access only." robots="noindex, nofollow" />
-      {/* Sidebar-style Top Header */}
+      
+      {/* Top Header */}
       <header className="h-20 bg-[#0f172a] border-b border-white/5 flex items-center justify-between px-8 shrink-0">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-sky-500 rounded-xl flex items-center justify-center shadow-lg shadow-sky-500/20">
@@ -282,7 +365,7 @@ function AdminPage() {
           </a>
           <button 
             onClick={handleLogout}
-            className="bg-white/5 hover:bg-red-500/10 hover:text-red-400 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-white/5 flex items-center gap-2"
+            className="bg-white/5 hover:bg-red-500/10 hover:text-red-400 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-white/5 flex items-center gap-2 cursor-pointer"
           >
             <LogOut className="w-4 h-4" /> Logout
           </button>
@@ -334,9 +417,9 @@ function AdminPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-sky-400 uppercase tracking-widest ml-2">Unit/Qty</label>
+                    <label className="text-[10px] font-black text-sky-400 uppercase tracking-widest ml-2">Stock (Units Available)</label>
                     <input
-                      type="text"
+                      type="number"
                       value={formData.quantity}
                       onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                       className="w-full bg-[#020617] border border-white/5 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-sky-500/50 transition-all font-bold"
@@ -368,7 +451,7 @@ function AdminPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-sky-500 hover:bg-sky-400 text-white font-black py-4 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-sky-500/10 disabled:opacity-50"
+                  className="w-full bg-sky-500 hover:bg-sky-400 text-white font-black py-4 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-sky-500/10 disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin" /> : <><Plus className="w-5 h-5" /> PUBLISH PRODUCT</>}
                 </button>
@@ -376,75 +459,254 @@ function AdminPage() {
             </div>
           </div>
 
-          {/* Right Column: Inventory & Analytics */}
+          {/* Right Column: Dynamic Tabs (Inventory vs Orders) */}
           <div className="xl:col-span-8 space-y-8">
             <div className="bg-[#0f172a] rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl flex flex-col h-full">
-              <div className="p-8 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-transparent to-white/[0.02]">
-                <h2 className="text-2xl font-black text-white flex items-center gap-3">
-                  <Package className="w-6 h-6 text-sky-400" /> LIVE INVENTORY
-                </h2>
-                <div className="px-4 py-1.5 bg-sky-500/10 border border-sky-500/20 rounded-full">
-                  <span className="text-sky-400 text-xs font-black tracking-widest">{products.length} ITEMS TOTAL</span>
+              
+              {/* Tab Navigation Header */}
+              <div className="p-8 border-b border-white/5 flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-transparent to-white/[0.02] gap-4">
+                <div className="flex gap-4">
+                  <button 
+                    onClick={() => setActiveTab("inventory")}
+                    className={`text-xl font-black flex items-center gap-3 pb-1 border-b-2 transition-all cursor-pointer ${
+                      activeTab === "inventory" ? "text-white border-sky-500" : "text-slate-500 border-transparent hover:text-slate-300"
+                    }`}
+                  >
+                    <Package className="w-5 h-5" /> LIVE INVENTORY
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab("orders")}
+                    className={`text-xl font-black flex items-center gap-3 pb-1 border-b-2 transition-all cursor-pointer ${
+                      activeTab === "orders" ? "text-white border-sky-500" : "text-slate-500 border-transparent hover:text-slate-300"
+                    }`}
+                  >
+                    <CreditCard className="w-5 h-5" /> PAYMENTS & ORDERS
+                  </button>
+                </div>
+                
+                <div className="px-4 py-1.5 bg-sky-500/10 border border-sky-500/20 rounded-full w-fit">
+                  <span className="text-sky-400 text-xs font-black tracking-widest uppercase">
+                    {activeTab === "inventory" ? `${products.length} Items` : `${payments.length} Payments Logged`}
+                  </span>
                 </div>
               </div>
 
+              {/* Dynamic Panel Content */}
               <div className="flex-1 overflow-y-auto p-8 custom-scrollbar min-h-[600px]">
-                {isLoadingProducts ? (
-                  <div className="flex flex-col items-center justify-center h-64 gap-4">
-                    <Loader2 className="w-8 h-8 text-sky-500 animate-spin" />
-                    <p className="text-xs font-black text-slate-600 tracking-[0.2em]">SYNCING DATA...</p>
-                  </div>
-                ) : products.length === 0 ? (
-                  <div className="text-center py-20">
-                    <Package className="w-16 h-16 text-slate-800 mx-auto mb-4 opacity-50" />
-                    <p className="text-slate-500 font-bold">No products found in database</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <AnimatePresence>
-                      {products.map((product) => (
-                        <motion.div
-                          key={product._id}
-                          layout
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
-                          className="bg-[#020617] rounded-3xl p-5 border border-white/5 group hover:border-sky-500/30 transition-all flex gap-5 relative"
-                        >
-                          <div className="w-24 h-24 rounded-2xl overflow-hidden shrink-0 bg-slate-900 border border-white/5">
-                            <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
-                          </div>
-                          
-                          <div className="flex-1 min-w-0 flex flex-col">
-                            <div className="flex items-start justify-between gap-2 mb-1">
-                              <h3 className="font-black text-white truncate text-lg uppercase tracking-tight">{product.name}</h3>
-                              <button 
-                                onClick={() => handleDeleteProduct(product._id)}
-                                className="p-2 text-slate-600 hover:text-red-400 transition-colors"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                            
-                            <div className="flex items-center gap-4 mt-auto">
-                              <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-xl border border-white/5">
-                                <MousePointer2 className="w-3.5 h-3.5 text-sky-400" />
-                                <span className="text-lg font-black text-white">{product.clicks}</span>
-                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">Clicks</span>
+                
+                {/* 1. Inventory View */}
+                {activeTab === "inventory" && (
+                  <>
+                    {isLoadingProducts ? (
+                      <div className="flex flex-col items-center justify-center h-64 gap-4">
+                        <Loader2 className="w-8 h-8 text-sky-500 animate-spin" />
+                        <p className="text-xs font-black text-slate-600 tracking-[0.2em]">SYNCING DATA...</p>
+                      </div>
+                    ) : products.length === 0 ? (
+                      <div className="text-center py-20">
+                        <Package className="w-16 h-16 text-slate-800 mx-auto mb-4 opacity-50" />
+                        <p className="text-slate-500 font-bold">No products found in database</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <AnimatePresence>
+                          {products.map((product) => (
+                            <motion.div
+                              key={product._id}
+                              layout
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, scale: 0.95 }}
+                              className="bg-[#020617] rounded-3xl p-5 border border-white/5 group hover:border-sky-500/30 transition-all flex gap-5 relative"
+                            >
+                              <div className="w-24 h-24 rounded-2xl overflow-hidden shrink-0 bg-slate-900 border border-white/5">
+                                <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
                               </div>
-                              <div className="text-xl font-black text-sky-400">₹{product.price}</div>
-                            </div>
-                          </div>
+                              
+                              <div className="flex-1 min-w-0 flex flex-col">
+                                <div className="flex items-start justify-between gap-2 mb-1">
+                                  <h3 className="font-black text-white truncate text-lg uppercase tracking-tight">{product.name}</h3>
+                                  <button 
+                                    onClick={() => handleDeleteProduct(product._id)}
+                                    className="p-2 text-slate-600 hover:text-red-400 transition-colors cursor-pointer"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
+                                
+                                <div className="flex items-center gap-4 mt-auto">
+                                  <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-xl border border-white/5">
+                                    <MousePointer2 className="w-3.5 h-3.5 text-sky-400" />
+                                    <span className="text-lg font-black text-white">{product.clicks}</span>
+                                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">Clicks</span>
+                                  </div>
+                                  <div className="text-xl font-black text-sky-400">₹{product.price}</div>
+                                </div>
+                              </div>
 
-                          {/* Hover Overlay Stats */}
-                          <div className="absolute top-4 right-12 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{product.quantity}</span>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </div>
+                              {/* Hover Stock Level */}
+                              <div className="absolute top-4 right-12 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{product.quantity} Qty</span>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </AnimatePresence>
+                      </div>
+                    )}
+                  </>
                 )}
+
+                {/* 2. Payments / Orders View */}
+                {activeTab === "orders" && (
+                  <>
+                    {isLoadingPayments ? (
+                      <div className="flex flex-col items-center justify-center h-64 gap-4">
+                        <Loader2 className="w-8 h-8 text-sky-500 animate-spin" />
+                        <p className="text-xs font-black text-slate-600 tracking-[0.2em]">LOADING TRANSACTIONS...</p>
+                      </div>
+                    ) : payments.length === 0 ? (
+                      <div className="text-center py-20">
+                        <CreditCard className="w-16 h-16 text-slate-800 mx-auto mb-4 opacity-50" />
+                        <p className="text-slate-500 font-bold">No payments logged in the database</p>
+                      </div>
+                    ) : (
+                      <>
+                      <div className="space-y-6">
+                        {payments.map((payment) => {
+                          const isRefundable = ["paid", "processing", "shipped", "delivered"].includes(payment.status);
+                          
+                          // Style based on payment status
+                          let badgeStyle = "bg-yellow-500/10 text-yellow-400 border-yellow-500/20";
+                          if (payment.status === "paid") badgeStyle = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+                          if (payment.status === "processing") badgeStyle = "bg-sky-500/10 text-sky-400 border-sky-500/20";
+                          if (payment.status === "shipped") badgeStyle = "bg-purple-500/10 text-purple-400 border-purple-500/20";
+                          if (payment.status === "delivered") badgeStyle = "bg-green-500/10 text-green-400 border-green-500/20";
+                          if (payment.status === "refunded") badgeStyle = "bg-orange-500/10 text-orange-400 border-orange-500/20";
+                          if (["failed", "cancelled"].includes(payment.status)) badgeStyle = "bg-red-500/10 text-red-400 border-red-500/20";
+
+                          return (
+                            <div 
+                              key={payment._id}
+                              className="bg-[#020617] rounded-3xl p-6 border border-white/5 hover:border-white/10 transition-all flex flex-col lg:flex-row lg:items-start justify-between gap-6"
+                            >
+                              {/* Order metadata & Customer Details */}
+                              <div className="space-y-4 flex-1">
+                                <div className="flex flex-wrap items-center gap-3">
+                                  <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${badgeStyle}`}>
+                                    {payment.status}
+                                  </span>
+                                  <span className="text-[11px] font-mono text-slate-500">
+                                    ID: {payment.razorpayOrderId}
+                                  </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <h4 className="text-xs font-black text-sky-400 uppercase tracking-widest flex items-center gap-1.5">
+                                      <User className="w-3.5 h-3.5 text-sky-400" /> Customer Details
+                                    </h4>
+                                    <p className="text-sm font-bold text-white uppercase">{payment.customerName}</p>
+                                    <div className="flex flex-col gap-1 text-xs text-slate-400">
+                                      <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" /> {payment.customerEmail}</span>
+                                      <span className="flex items-center gap-1.5">
+                                        <Phone className="w-3.5 h-3.5" /> 
+                                        <a 
+                                          href={`https://wa.me/91${payment.customerPhone}`} 
+                                          target="_blank" 
+                                          className="hover:underline text-emerald-400 font-bold"
+                                        >
+                                          {payment.customerPhone} (WhatsApp)
+                                        </a>
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <div className="space-y-2">
+                                    <h4 className="text-xs font-black text-sky-400 uppercase tracking-widest flex items-center gap-1.5">
+                                      <MapPin className="w-3.5 h-3.5 text-sky-400" /> Shipping Address
+                                    </h4>
+                                    <p className="text-xs text-slate-300 leading-relaxed font-semibold">
+                                      {payment.shippingAddress}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="pt-2 flex flex-wrap gap-4 text-xs font-bold text-slate-500">
+                                  <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> {new Date(payment.createdAt).toLocaleString()}</span>
+                                  {payment.razorpayPaymentId && (
+                                    <span className="font-mono text-slate-650">Pay ID: {payment.razorpayPaymentId}</span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Transaction summary & Actions */}
+                              <div className="flex flex-col sm:flex-row lg:flex-col justify-between items-start lg:items-end gap-6 shrink-0 border-t lg:border-t-0 lg:border-l border-white/5 pt-6 lg:pt-0 lg:pl-6 min-w-[200px]">
+                                <div className="text-left lg:text-right">
+                                  <p className="text-[10px] font-black text-sky-400 uppercase tracking-widest">Order Summary</p>
+                                  <h4 className="text-base font-black text-white uppercase leading-tight line-clamp-1 mt-1">{payment.productName}</h4>
+                                  <p className="text-xs text-slate-400 font-semibold mt-0.5">Quantity: {payment.quantity} unit(s)</p>
+                                  <p className="text-2xl font-black text-sky-400 mt-2">₹{payment.amount}</p>
+                                </div>
+
+                                <div className="w-full space-y-3">
+                                  {/* Status Transition Selector */}
+                                  <div className="space-y-1">
+                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Change Status</label>
+                                    <select
+                                      value={payment.status}
+                                      onChange={(e) => handleUpdateStatus(payment._id, e.target.value)}
+                                      className="w-full bg-[#0F172A] border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500/50 font-bold"
+                                    >
+                                      <option value="pending">Pending</option>
+                                      <option value="paid">Paid</option>
+                                      <option value="processing">Processing</option>
+                                      <option value="shipped">Shipped</option>
+                                      <option value="delivered">Delivered</option>
+                                      <option value="refunded">Refunded</option>
+                                      <option value="cancelled">Cancelled</option>
+                                      <option value="failed">Failed</option>
+                                    </select>
+                                  </div>
+
+                                  {/* Razorpay Refund Action */}
+                                  {isRefundable && (
+                                    <button
+                                      onClick={() => handleRefund(payment._id)}
+                                      className="w-full py-2 border border-red-500/30 hover:bg-red-500/10 text-red-400 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer uppercase tracking-wider"
+                                    >
+                                      <RefreshCw className="w-3.5 h-3.5" /> Razorpay Refund
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      
+                      {/* Pagination Controls */}
+                      <div className="flex items-center justify-between mt-8 border-t border-white/10 pt-6">
+                        <button
+                          onClick={() => setPaymentsPage(p => Math.max(1, p - 1))}
+                          disabled={paymentsPage === 1}
+                          className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl font-bold text-sm text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                        >
+                          Previous
+                        </button>
+                        <span className="text-sm font-black text-slate-400">Page {paymentsPage}</span>
+                        <button
+                          onClick={() => setPaymentsPage(p => p + 1)}
+                          disabled={payments.length < 40}
+                          className="px-6 py-2.5 bg-sky-500 hover:bg-sky-400 border border-sky-400/50 rounded-xl font-bold text-sm text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                        >
+                          Next
+                        </button>
+                      </div>
+                      </>
+                    )}
+                  </>
+                )}
+
               </div>
             </div>
           </div>
