@@ -49,6 +49,8 @@ if (process.env.ADMIN_PASSWORD && !process.env.ADMIN_PASSWORD_HASH) {
 }
 
 export const app = express();
+app.set("trust proxy", 1); // Trust the reverse proxy (Vercel) for rate limiting
+
 const port = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET!;
 const TOKEN_EXPIRY = "1h";
@@ -86,14 +88,18 @@ const allowedOrigins = [
   "https://www.vayusnetworks.com"
 ];
 
+// Helper to check if origin is allowed (including vercel preview deployments)
+const isOriginAllowed = (origin: string) => {
+  if (allowedOrigins.includes(origin)) return true;
+  if (isProd && origin.endsWith(".vercel.app")) return true;
+  if (!isProd && (origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:"))) return true;
+  return false;
+};
+
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    // Sandbox check: only bypass in development mode if strictly localhost/127.0.0.1
-    if (!isProd && (origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:"))) {
+    if (isOriginAllowed(origin)) {
       return callback(null, true);
     }
     return callback(new Error("CORS policy violation: origin not allowed"), false);
@@ -120,10 +126,7 @@ app.use((req, res, next) => {
     
     try {
       const originUrl = new URL(origin);
-      const isAllowed = allowedOrigins.includes(originUrl.origin) || 
-        (!isProd && (originUrl.hostname === "localhost" || originUrl.hostname === "127.0.0.1"));
-      
-      if (!isAllowed) {
+      if (!isOriginAllowed(originUrl.origin)) {
         return res.status(403).json({ error: "Forbidden: Origin verification failed." });
       }
     } catch (e) {
