@@ -235,7 +235,7 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl bg-[#0C1A2E] border-white/10 text-white rounded-[2.5rem] p-0 overflow-hidden shadow-2xl">
+      <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto bg-[#0C1A2E] border-white/10 text-white rounded-[2rem] sm:rounded-[2.5rem] p-0 shadow-2xl">
         <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent pointer-events-none" />
 
         <AnimatePresence mode="wait">
@@ -245,7 +245,7 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              className="p-8 grid grid-cols-1 md:grid-cols-12 gap-8"
+              className="p-5 sm:p-8 grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-8"
             >
               {/* Product Info / Summary Column */}
               <div className="md:col-span-5 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/5 pb-6 md:pb-0 md:pr-6">
@@ -307,7 +307,7 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                   </div>
                   <div className="flex items-baseline justify-between pt-2 border-t border-white/10 mt-2">
                     <span className="text-xs font-bold text-slate-400">Total Price</span>
-                    <span className="text-2xl font-black text-white">₹{totalAmount}</span>
+                    <span className="text-xl sm:text-2xl font-black text-white">₹{totalAmount}</span>
                   </div>
                   <p className="text-[10px] text-slate-400 font-medium pt-1">VAT & transaction fees included</p>
                 </div>
@@ -397,9 +397,9 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="p-16 flex flex-col items-center justify-center text-center gap-6"
+              className="p-8 sm:p-16 flex flex-col items-center justify-center text-center gap-6"
             >
-              <Loader2 className="w-12 h-12 text-sky-405 animate-spin" />
+              <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-sky-405 animate-spin" />
               <div>
                 <h3 className="text-xl font-black text-white mb-2 tracking-tight">PROCESSING TRANSACTION</h3>
                 <p className="text-slate-400 font-medium text-sm">Please do not refresh or close the modal window</p>
@@ -413,10 +413,10 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="p-16 flex flex-col items-center justify-center text-center gap-6"
+              className="p-8 sm:p-16 flex flex-col items-center justify-center text-center gap-6"
             >
-              <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/20">
-                <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/20">
+                <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-400" />
               </div>
               <div>
                 <h3 className="text-2xl font-black text-white mb-2 tracking-tight">ORDER PLACED SUCCESSFULLY!</h3>
@@ -443,10 +443,10 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="p-16 flex flex-col items-center justify-center text-center gap-6"
+              className="p-8 sm:p-16 flex flex-col items-center justify-center text-center gap-6"
             >
-              <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20">
-                <AlertTriangle className="w-10 h-10 text-red-400" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20">
+                <AlertTriangle className="w-8 h-8 sm:w-10 sm:h-10 text-red-400" />
               </div>
               <div>
                 <h3 className="text-2xl font-black text-white mb-2 tracking-tight">TRANSACTION FAILED</h3>

@@ -126,12 +126,12 @@ function Dashboard() {
             ) : (
               <div className="space-y-4">
                 {orders.map((order: any) => (
-                  <div key={order._id} className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-4 border-b border-white/10">
+                  <div key={order._id} className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 hover:bg-white/10 transition-colors">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 sm:gap-4 mb-3 pb-3 sm:mb-4 sm:pb-4 border-b border-white/10">
                       <div>
-                        <div className="flex items-center gap-3 mb-1">
-                          <h4 className="font-black text-white text-lg uppercase">{order.productName}</h4>
-                          <span className={`px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider ${
+                        <div className="flex items-center gap-2 sm:gap-3 mb-1">
+                          <h4 className="font-black text-white text-base sm:text-lg uppercase">{order.productName}</h4>
+                          <span className={`px-2 py-0.5 sm:py-1 rounded text-[8px] sm:text-[10px] font-black uppercase tracking-wider ${
                             order.status === 'delivered' ? 'bg-emerald-500/20 text-emerald-400' :
                             order.status === 'shipped' ? 'bg-sky-500/20 text-sky-400' :
                             order.status === 'cancelled' ? 'bg-red-500/20 text-red-400' :
@@ -140,33 +140,33 @@ function Dashboard() {
                             {order.status}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-400 font-mono">ID: {order._id}</p>
+                        <p className="text-[10px] sm:text-xs text-slate-400 font-mono">ID: {order._id}</p>
                       </div>
-                      <div className="text-left md:text-right">
-                        <p className="text-xl font-black text-sky-400">₹{order.amount}</p>
-                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Qty: {order.quantity}</p>
+                      <div className="text-left md:text-right mt-1 md:mt-0 flex flex-row md:flex-col justify-between items-center md:items-end">
+                        <p className="text-lg sm:text-xl font-black text-sky-400">₹{order.amount}</p>
+                        <p className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-widest">Qty: {order.quantity}</p>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                      <div className="space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm">
+                      <div className="space-y-1.5 sm:space-y-2">
                         <div className="flex items-start gap-2 text-slate-300">
-                          <Clock className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
-                          <span>Ordered on: {format(new Date(order.createdAt), 'MMM dd, yyyy h:mm a')}</span>
+                          <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 shrink-0 mt-0.5" />
+                          <span>Ordered: {format(new Date(order.createdAt), 'MMM dd, yyyy h:mm a')}</span>
                         </div>
                         <div className="flex items-start gap-2 text-slate-300">
-                          <CreditCard className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
-                          <span>Payment: {order.razorpayPaymentId || 'N/A'}</span>
+                          <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 shrink-0 mt-0.5" />
+                          <span className="truncate">Payment: {order.razorpayPaymentId || 'N/A'}</span>
                         </div>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-1.5 sm:space-y-2">
                         <div className="flex items-start gap-2 text-slate-300">
-                          <MapPin className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+                          <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 shrink-0 mt-0.5" />
                           <span className="line-clamp-2">{order.shippingAddress}</span>
                         </div>
                         {order.trackingUrl && (
-                          <div className="flex items-start gap-2 text-emerald-400 mt-2">
-                            <ExternalLink className="w-4 h-4 shrink-0 mt-0.5" />
+                          <div className="flex items-start gap-2 text-emerald-400 mt-1 sm:mt-2">
+                            <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 mt-0.5" />
                             <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="hover:underline font-semibold">
                               Track Package (ID: {order.trackingId})
                             </a>

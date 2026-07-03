@@ -158,17 +158,17 @@ export default function Products() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="bg-white rounded-[2rem] overflow-hidden shadow-md border border-slate-100 animate-pulse"
+                className="bg-white rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-md border border-slate-100 animate-pulse"
               >
                 <div className="aspect-square bg-slate-100"></div>
-                <div className="p-6 space-y-4">
-                  <div className="h-6 bg-slate-100 rounded-lg w-3/4"></div>
-                  <div className="h-4 bg-slate-100 rounded-lg w-1/4"></div>
-                  <div className="h-12 bg-slate-100 rounded-xl w-full mt-4"></div>
+                <div className="p-3 sm:p-6 space-y-3 sm:space-y-4">
+                  <div className="h-5 sm:h-6 bg-slate-100 rounded-lg w-3/4"></div>
+                  <div className="h-3 sm:h-4 bg-slate-100 rounded-lg w-1/4"></div>
+                  <div className="h-10 sm:h-12 bg-slate-100 rounded-xl w-full mt-2 sm:mt-4"></div>
                 </div>
               </div>
             ))}
@@ -195,11 +195,11 @@ export default function Products() {
             <p className="text-slate-500 font-bold text-sm">No products found matching your search</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8">
             {filteredProducts.map((product, index) => (
               <motion.div
                 key={product._id}
-                className="group relative bg-white/95 rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden flex flex-col h-full"
+                className="group relative bg-white/95 rounded-[1.5rem] sm:rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden flex flex-col h-full"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
@@ -213,8 +213,8 @@ export default function Products() {
                   />
 
                   {/* Stock Level Badge */}
-                  <div className="absolute top-4 right-4 z-20">
-                    <div className={`backdrop-blur-md px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-md border ${product.quantity <= 0
+                  <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20">
+                    <div className={`backdrop-blur-md px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-xl text-[7px] sm:text-[9px] font-black uppercase tracking-widest shadow-md border ${product.quantity <= 0
                       ? "bg-rose-50 border-rose-200 text-rose-600"
                       : "bg-emerald-50 border-emerald-200 text-emerald-600"
                       }`}>
@@ -227,21 +227,21 @@ export default function Products() {
                 </div>
 
                 {/* Card Content */}
-                <div className="p-6 flex flex-col flex-1">
-                  <div className="mb-4">
-                    <h4 className="text-base font-bold text-slate-800 mb-1 group-hover:text-rose-500 transition-colors leading-tight line-clamp-1 uppercase">
+                <div className="p-3 sm:p-6 flex flex-col flex-1">
+                  <div className="mb-2 sm:mb-4">
+                    <h4 className="text-sm sm:text-base font-bold text-slate-800 mb-1 group-hover:text-rose-500 transition-colors leading-tight line-clamp-1 uppercase">
                       {product.name}
                     </h4>
-                    <p className="text-[9px] text-slate-450 font-bold uppercase tracking-wider">F Mart Guaranteed</p>
+                    <p className="text-[7px] sm:text-[9px] text-slate-450 font-bold uppercase tracking-wider">F Mart Guaranteed</p>
                   </div>
 
-                  <div className="flex items-baseline gap-1 mt-auto mb-6">
-                    <span className="text-xl font-black text-slate-900 font-display">₹{product.price}</span>
-                    <span className="text-slate-400 font-bold text-[9px] uppercase">INR</span>
+                  <div className="flex items-baseline gap-1 mt-auto mb-3 sm:mb-6">
+                    <span className="text-base sm:text-xl font-black text-slate-900 font-display">₹{product.price}</span>
+                    <span className="text-slate-400 font-bold text-[7px] sm:text-[9px] uppercase">INR</span>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex gap-2 w-full mt-auto">
+                  <div className="flex flex-col sm:flex-row gap-2 w-full mt-auto">
                     <button
                       onClick={async () => {
                         if (product.quantity <= 0) return;
@@ -258,19 +258,19 @@ export default function Products() {
                         setIsCheckoutOpen(true);
                       }}
                       disabled={product.quantity <= 0}
-                      className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl font-bold text-xs transition-all duration-300 shadow-sm cursor-pointer active:scale-95 ${product.quantity <= 0
+                      className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl font-bold text-[10px] sm:text-xs transition-all duration-300 shadow-sm cursor-pointer active:scale-95 ${product.quantity <= 0
                         ? "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none border border-slate-200"
                         : "bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-605 text-white shadow-md shadow-rose-500/10"
                         }`}
                     >
-                      <ShoppingBag className="w-4 h-4 shrink-0" />
+                      <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                       {product.quantity <= 0 ? "Out of Stock" : "Buy Now"}
                     </button>
                     <a
                       href={`https://wa.me/919100080233?text=${encodeURIComponent(`Hi, I want to purchase ${product.name} from F Mart`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-3 border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/30 text-emerald-600 rounded-xl font-bold transition-all duration-300 flex items-center justify-center shrink-0 active:scale-95"
+                      className="px-3 py-2 sm:py-3 border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/30 text-emerald-600 rounded-lg sm:rounded-xl font-bold transition-all duration-300 flex items-center justify-center shrink-0 active:scale-95"
                       title="Order on WhatsApp"
                     >
                       <svg className="w-4 h-4 fill-emerald-500" viewBox="0 0 24 24">
@@ -281,7 +281,7 @@ export default function Products() {
                 </div>
 
                 {/* Subtle Glow Overlay */}
-                <div className="absolute -inset-px bg-gradient-to-tr from-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300 rounded-[2rem]" />
+                <div className="absolute -inset-px bg-gradient-to-tr from-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300 rounded-[1.5rem] sm:rounded-[2rem]" />
               </motion.div>
             ))}
           </div>
