@@ -230,11 +230,11 @@ async function authenticateAdmin(req: express.Request, res: express.Response, ne
       return res.status(403).json({ error: "Forbidden: Admin access required" });
     }
     
-    // Check if password was changed after token was issued
-    const admin = await Admin.findOne({ email: decoded.email });
-    if (!admin) return res.status(401).json({ error: "Admin not found" });
+    // Fetch the admin record (if it exists) to check for password changes
+    // We don't fail if it doesn't exist because the system falls back to .env credentials
+    const admin = await Admin.findOne();
     
-    if (admin.passwordChangedAt && decoded.iat) {
+    if (admin && admin.passwordChangedAt && decoded.iat) {
       const changedTimestamp = parseInt((admin.passwordChangedAt.getTime() / 1000).toString(), 10);
       if (decoded.iat < changedTimestamp) {
         return res.status(401).json({ error: "Session expired due to password change" });
