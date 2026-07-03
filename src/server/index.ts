@@ -84,8 +84,8 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "http://localhost:3001",
-  "https://vayusnetworks.com",
-  "https://www.vayusnetworks.com"
+  "https://vayusenterprises.com",
+  "https://www.vayusenterprises.com"
 ];
 
 // Helper to check if origin is allowed (including vercel preview deployments)

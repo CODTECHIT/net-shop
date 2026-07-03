@@ -3,5 +3,5 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/admin
 
-Sitemap: https://vayusnetworks.com/sitemap.xml
+Sitemap: https://vayusenterprises.com/sitemap.xml
 
