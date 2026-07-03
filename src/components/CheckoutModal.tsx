@@ -1,30 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
-import { 
-  Loader2, 
-  CheckCircle2, 
-  AlertTriangle, 
-  CreditCard, 
-  ShoppingBag, 
-  MapPin, 
-  User, 
-  Mail, 
+import {
+  Loader2,
+  CheckCircle2,
+  AlertTriangle,
+  CreditCard,
+  ShoppingBag,
+  MapPin,
+  User,
+  Mail,
   Phone,
   Plus,
-  Minus
+  Minus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
+import { useQuery } from "@tanstack/react-query";
 
 declare global {
   interface Window {
-    Razorpay: any;
+    Razorpay: unknown;
   }
 }
 
@@ -63,11 +64,21 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
     name: "",
     email: "",
     phone: "",
-    address: ""
+    address: "",
   });
   const [step, setStep] = useState<"form" | "processing" | "success" | "error">("form");
   const [paymentId, setPaymentId] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const { data: userData } = useQuery({
+    queryKey: ["userMe"],
+    queryFn: async () => {
+      const res = await fetch("/api/users/me");
+      if (!res.ok) throw new Error("Not logged in");
+      return res.json();
+    },
+    retry: false,
+  });
 
   // Reset form when modal closes or product changes
   useEffect(() => {
@@ -76,25 +87,36 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
       setStep("form");
       setPaymentId("");
       setErrorMessage("");
+      if (userData?.user) {
+        setFormData((prev) => ({
+          ...prev,
+          name: userData.user.name || "",
+          email: userData.user.email || "",
+          phone: userData.user.phone || "",
+        }));
+      }
     }
-  }, [isOpen, product]);
+  }, [isOpen, product, userData]);
 
   if (!product) return null;
 
-  const totalAmount = product.price * quantity;
+  const subtotal = product.price * quantity;
+  const gstAmount = Math.round(subtotal * 0.18);
+  const shippingAmount = subtotal >= 1000 ? 0 : 50;
+  const totalAmount = subtotal + gstAmount + shippingAmount;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const incrementQty = () => setQuantity(q => (q < product.quantity ? q + 1 : q));
-  const decrementQty = () => setQuantity(q => (q > 1 ? q - 1 : 1));
+  const incrementQty = () => setQuantity((q) => (q < product.quantity ? q + 1 : q));
+  const decrementQty = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
     if (step === "processing") return;
-    
+
     // Basic validation
     if (!formData.name.trim()) return toast.error("Please enter your name");
     if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Please enter a valid email");
@@ -135,8 +157,8 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
           customerEmail: formData.email,
           customerPhone: formData.phone,
           shippingAddress: formData.address,
-          quantity
-        })
+          quantity,
+        }),
       });
 
       const orderData = await orderRes.json();
@@ -152,10 +174,10 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
         key: keyId,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: "Vayu's Networks",
+        name: "Vayus Enterprises",
         description: `Order for ${product.name}`,
         order_id: orderData.orderId,
-        handler: async function (response: any) {
+        handler: async function (response: Record<string, string>) {
           // Trigger signature verification on backend
           setStep("processing");
           try {
@@ -165,8 +187,8 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature
-              })
+                razorpay_signature: response.razorpay_signature,
+              }),
             });
 
             const verifyData = await verifyRes.json();
@@ -191,20 +213,19 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
           contact: formData.phone,
         },
         theme: {
-          color: "#0ea5e9" // sky-500
+          color: "#0ea5e9", // sky-500
         },
         modal: {
-          ondismiss: function() {
+          ondismiss: function () {
             setStep("form");
             toast.info("Payment cancelled");
-          }
-        }
+          },
+        },
       };
 
       const rzp = new window.Razorpay(options);
       rzp.open();
-
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setStep("form");
       setErrorMessage("An unexpected network error occurred.");
@@ -216,10 +237,10 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl bg-[#0C1A2E] border-white/10 text-white rounded-[2.5rem] p-0 overflow-hidden shadow-2xl">
         <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent pointer-events-none" />
-        
+
         <AnimatePresence mode="wait">
           {step === "form" && (
-            <motion.div 
+            <motion.div
               key="form"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -252,16 +273,16 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                   <div className="mt-6">
                     <label className="text-[10px] font-black text-sky-400 uppercase tracking-widest block mb-2">Quantity</label>
                     <div className="flex items-center gap-3">
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         onClick={decrementQty}
                         className="w-10 h-10 bg-[#0A0F1C] hover:bg-white/5 text-white border border-white/10 flex items-center justify-center transition-all active:scale-90"
                       >
                         <Minus className="w-4 h-4" />
                       </button>
                       <span className="text-lg font-black text-white w-8 text-center">{quantity}</span>
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         onClick={incrementQty}
                         className="w-10 h-10 bg-[#0A0F1C] hover:bg-white/5 text-white border border-white/10 flex items-center justify-center transition-all active:scale-90"
                       >
@@ -271,12 +292,24 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                   </div>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-white/5">
-                  <div className="flex items-baseline justify-between mb-2">
+                <div className="mt-8 pt-6 border-t border-white/5 space-y-2">
+                  <div className="flex items-baseline justify-between text-sm text-slate-400">
+                    <span>Subtotal</span>
+                    <span>₹{subtotal}</span>
+                  </div>
+                  <div className="flex items-baseline justify-between text-sm text-slate-400">
+                    <span>GST (18%)</span>
+                    <span>₹{gstAmount}</span>
+                  </div>
+                  <div className="flex items-baseline justify-between text-sm text-slate-400">
+                    <span>Shipping</span>
+                    <span>{shippingAmount === 0 ? "Free" : `₹${shippingAmount}`}</span>
+                  </div>
+                  <div className="flex items-baseline justify-between pt-2 border-t border-white/10 mt-2">
                     <span className="text-xs font-bold text-slate-400">Total Price</span>
                     <span className="text-2xl font-black text-white">₹{totalAmount}</span>
                   </div>
-                  <p className="text-[10px] text-slate-400 font-medium">VAT & transaction fees included</p>
+                  <p className="text-[10px] text-slate-400 font-medium pt-1">VAT & transaction fees included</p>
                 </div>
               </div>
 
@@ -293,8 +326,9 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                       value={formData.name}
                       onChange={handleInputChange}
                       placeholder="e.g. your name "
-                      className="w-full bg-[#0A0F1C] border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all text-sm font-semibold focus:bg-white/5"
+                      className="w-full bg-[#0A0F1C] border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all text-sm font-semibold focus:bg-white/5 read-only:opacity-60 read-only:cursor-not-allowed"
                       required
+                      readOnly={!!userData?.user}
                     />
                   </div>
 
@@ -309,8 +343,9 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="recipient@domain.com"
-                        className="w-full bg-[#0A0F1C] border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all text-xs font-semibold focus:bg-white/5"
+                        className="w-full bg-[#0A0F1C] border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all text-xs font-semibold focus:bg-white/5 read-only:opacity-60 read-only:cursor-not-allowed"
                         required
+                        readOnly={!!userData?.user}
                       />
                     </div>
 
@@ -324,8 +359,9 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="Mobile Number"
-                        className="w-full bg-[#0A0F1C] border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all text-xs font-semibold focus:bg-white/5"
+                        className="w-full bg-[#0A0F1C] border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-slate-400 focus:outline-none focus:border-sky-500/50 transition-all text-xs font-semibold focus:bg-white/5 read-only:opacity-60 read-only:cursor-not-allowed"
                         required
+                        readOnly={!!userData?.user}
                       />
                     </div>
                   </div>
@@ -356,7 +392,7 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
           )}
 
           {step === "processing" && (
-            <motion.div 
+            <motion.div
               key="processing"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -372,7 +408,7 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
           )}
 
           {step === "success" && (
-            <motion.div 
+            <motion.div
               key="success"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -392,7 +428,7 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                   <div className="flex justify-between"><span className="text-slate-500">Payment ID:</span> <span className="font-semibold text-white">{paymentId}</span></div>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={onClose}
                 className="bg-white text-[#020617] font-black px-8 py-3 rounded-xl hover:bg-slate-200 transition-all shadow-md active:scale-95 text-sm"
               >
@@ -402,7 +438,7 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
           )}
 
           {step === "error" && (
-            <motion.div 
+            <motion.div
               key="error"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -417,13 +453,13 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                 <p className="text-slate-400 text-sm font-medium mb-4">{errorMessage || "Verification could not be processed."}</p>
               </div>
               <div className="flex gap-4">
-                <button 
+                <button
                   onClick={() => setStep("form")}
                   className="bg-sky-500 text-white font-black px-6 py-3 rounded-xl hover:bg-sky-400 transition-all text-sm active:scale-95"
                 >
                   TRY AGAIN
                 </button>
-                <button 
+                <button
                   onClick={onClose}
                   className="bg-[#0A0F1C] border border-white/10 text-slate-300 font-black px-6 py-3 rounded-xl hover:bg-white/5 transition-all text-sm active:scale-95"
                 >

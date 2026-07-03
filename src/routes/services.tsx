@@ -11,9 +11,9 @@ function ServicesPage() {
   return (
     <div className="pt-24 pb-24 bg-white min-h-screen relative overflow-hidden">
       <SEO
-        title="Our Services — Government Certificates, ID Cards & Registrations | Vayu's Networks Kurnool"
-        description="Explore our comprehensive list of online services in Kurnool. We assist with ID cards, birth/death certificates, land registration, municipal tax, transport applications, and more."
-        keywords="online applications Kurnool, ID card correction, birth certificate online, land registration Kurnool, municipal services AP, APSPDCL electricity services"
+        title="Our Services | Government & Civic Assistance | Vayus Enterprises"
+        description="Explore our comprehensive list of online civic services. From Aadhar updates and ID cards to property registration and municipal services, we handle the complex processes for you."
+        keywords="government services Kurnool, Aadhar update Kurnool, property registration AP, municipal services Kurnool, ID card services, certificate services Kurnool"
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-20">

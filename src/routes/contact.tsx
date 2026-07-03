@@ -10,9 +10,9 @@ function ContactPage() {
   return (
     <div className="pt-20">
       <SEO
-        title="Contact Us — Doorstep Online Services | Vayu's Networks Kurnool"
-        description="Get in touch with Vayu's Networks. Visit our shop at Balaji Nagar, Kurnool, call us at +91 91000 80233, or message us on WhatsApp for rapid assistance with any online service."
-        keywords="contact Vayu's Networks, Kurnool online service address, Vayu's Networks phone number, WhatsApp online services Kurnool, Balaji Nagar Kurnool"
+        title="Contact Vayus Enterprises | Get in Touch for Services"
+        description="Contact Vayus Enterprises in Balaji Nagar, Kurnool. Call or WhatsApp us at +91 91000 80233 for immediate assistance with any online or civic services."
+        keywords="contact Vayus Enterprises, Vayus phone number, online services WhatsApp Kurnool, Vayus address Balaji Nagar"
       />
       <Contact />
     </div>

@@ -24,9 +24,8 @@ export function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-40 w-full transition-all ${
-        scrolled ? "glass-nav shadow-[0_8px_30px_-20px_rgba(15,23,42,0.25)]" : "bg-transparent"
-      }`}
+      className={`sticky top-0 z-40 w-full transition-all ${scrolled ? "glass-nav shadow-[0_8px_30px_-20px_rgba(15,23,42,0.25)]" : "bg-transparent"
+        }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:py-4 lg:py-5">
         <Link to="/" className="flex items-center gap-2 sm:gap-3 lg:gap-4" onClick={() => setOpen(false)}>
@@ -40,7 +39,8 @@ export function Navbar() {
             </div>
           </div>
           <span className="flex flex-col leading-tight overflow-hidden">
-            <span className="font-display text-lg sm:text-xl lg:text-2xl font-black text-navy tracking-tight truncate max-w-[150px] sm:max-w-[200px] lg:max-w-none uppercase">Vayu's Networks</span>
+            <span className="font-display text-lg sm:text-xl lg:text-2xl font-black text-navy tracking-tight truncate max-w-[150px] sm:max-w-[200px] lg:max-w-none uppercase">Vayus Enterprises
+            </span>
             <span className="text-[10px] sm:text-[11px] lg:text-[13px] uppercase tracking-[0.15em] sm:tracking-[0.2em] lg:tracking-[0.3em] font-black text-sky-600/90 mt-0.5">
               Kurnool · AP
             </span>

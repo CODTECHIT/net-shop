@@ -1,6 +1,7 @@
 # F Mart Storefront Design System & Layout Specification
 
-This document outlines the UI/UX design specifications to transform the Vayu's Networks products section into a dedicated, premium e-commerce hub named **F Mart**.
+This document outlines the UI/UX design specifications to transform the Vayus Enterprises 
+ products section into a dedicated, premium e-commerce hub named **F Mart**.
 
 ---
 

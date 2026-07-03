@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { ShoppingCart, ShoppingBag, Search, Sparkles, MapPin, Tag } from "lucide-react";
 import CheckoutModal from "./CheckoutModal";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 
 interface Product {
   _id: string;
@@ -18,6 +20,17 @@ export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
+  const { data: userData } = useQuery({
+    queryKey: ["userMe"],
+    queryFn: async () => {
+      const res = await fetch("/api/users/me");
+      if (!res.ok) throw new Error("Not logged in");
+      return res.json();
+    },
+    retry: false,
+  });
 
   useEffect(() => {
     // Fetch products from backend API
@@ -61,12 +74,12 @@ export default function Products() {
       <div className="absolute top-1/3 left-1/3 w-[600px] h-[600px] bg-amber-100/30 rounded-full blur-[130px] -z-0 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
+
         {/* F Mart Hero Banner */}
         <div className="bg-white/80 backdrop-blur-xl text-slate-800 rounded-[2.5rem] p-8 md:p-12 mb-12 relative overflow-hidden border border-slate-200/65 shadow-lg">
           <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-rose-200/10 rounded-full blur-[80px] -z-0 pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-emerald-200/10 rounded-full blur-[80px] -z-0 pointer-events-none" />
-          
+
           <div className="relative z-10 flex flex-col lg:flex-row items-center gap-8 justify-between">
             <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
               {/* Logo Frame */}
@@ -81,14 +94,15 @@ export default function Products() {
               <div>
                 <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 mb-2">
                   <h3 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 uppercase">
-                    F MART
+                    Family MART
                   </h3>
                   <span className="bg-amber-50 text-amber-700 border border-amber-200/60 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg flex items-center gap-1">
                     <Sparkles className="w-3 h-3" /> Official E-Store
                   </span>
                 </div>
                 <p className="text-slate-600 font-medium text-sm max-w-xl">
-                  Welcome to Vayu's Networks premium shopping experience. Quality products delivered directly to your doorstep with guaranteed savings.
+                  Welcome to Vayus Enterprises
+                  premium shopping experience. Quality products delivered directly to your doorstep with guaranteed savings.
                 </p>
               </div>
             </div>
@@ -197,14 +211,13 @@ export default function Products() {
                     alt={product.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  
+
                   {/* Stock Level Badge */}
                   <div className="absolute top-4 right-4 z-20">
-                    <div className={`backdrop-blur-md px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-md border ${
-                      product.quantity <= 0 
-                        ? "bg-rose-50 border-rose-200 text-rose-600" 
-                        : "bg-emerald-50 border-emerald-200 text-emerald-600"
-                    }`}>
+                    <div className={`backdrop-blur-md px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-md border ${product.quantity <= 0
+                      ? "bg-rose-50 border-rose-200 text-rose-600"
+                      : "bg-emerald-50 border-emerald-200 text-emerald-600"
+                      }`}>
                       {product.quantity <= 0 ? "Sold Out" : `${product.quantity} In Stock`}
                     </div>
                   </div>
@@ -221,7 +234,7 @@ export default function Products() {
                     </h4>
                     <p className="text-[9px] text-slate-450 font-bold uppercase tracking-wider">F Mart Guaranteed</p>
                   </div>
-                  
+
                   <div className="flex items-baseline gap-1 mt-auto mb-6">
                     <span className="text-xl font-black text-slate-900 font-display">₹{product.price}</span>
                     <span className="text-slate-400 font-bold text-[9px] uppercase">INR</span>
@@ -232,6 +245,10 @@ export default function Products() {
                     <button
                       onClick={async () => {
                         if (product.quantity <= 0) return;
+                        if (!userData?.user) {
+                          navigate({ to: "/login" });
+                          return;
+                        }
                         try {
                           await fetch(`/api/products/${product._id}/click`, { method: "POST" });
                         } catch (err) {
@@ -241,11 +258,10 @@ export default function Products() {
                         setIsCheckoutOpen(true);
                       }}
                       disabled={product.quantity <= 0}
-                      className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl font-bold text-xs transition-all duration-300 shadow-sm cursor-pointer active:scale-95 ${
-                        product.quantity <= 0 
-                          ? "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none border border-slate-200" 
-                          : "bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-605 text-white shadow-md shadow-rose-500/10"
-                      }`}
+                      className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl font-bold text-xs transition-all duration-300 shadow-sm cursor-pointer active:scale-95 ${product.quantity <= 0
+                        ? "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none border border-slate-200"
+                        : "bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-605 text-white shadow-md shadow-rose-500/10"
+                        }`}
                     >
                       <ShoppingBag className="w-4 h-4 shrink-0" />
                       {product.quantity <= 0 ? "Out of Stock" : "Buy Now"}

@@ -18,12 +18,42 @@ export default function Hero() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const serviceIcons = [
-    { icon: <FileText className="w-6 h-6" />, label: "ID Cards", color: "bg-sky-500", id: "id-cards" },
-    { icon: <ScrollText className="w-6 h-6" />, label: "Certificates", color: "bg-purple-500", id: "certificates" },
-    { icon: <Home className="w-6 h-6" />, label: "Property", color: "bg-emerald-500", id: "property" },
-    { icon: <Car className="w-6 h-6" />, label: "Transport", color: "bg-amber-500", id: "transport" },
-    { icon: <Building2 className="w-6 h-6" />, label: "Municipal", color: "bg-rose-500", id: "municipal" },
-    { icon: <Landmark className="w-6 h-6" />, label: "Registration", color: "bg-indigo-500", id: "register" },
+    {
+      icon: <FileText className="w-6 h-6" />,
+      label: "ID Cards",
+      color: "bg-sky-500",
+      id: "id-cards",
+    },
+    {
+      icon: <ScrollText className="w-6 h-6" />,
+      label: "Certificates",
+      color: "bg-purple-500",
+      id: "certificates",
+    },
+    {
+      icon: <Home className="w-6 h-6" />,
+      label: "Property",
+      color: "bg-emerald-500",
+      id: "property",
+    },
+    {
+      icon: <Car className="w-6 h-6" />,
+      label: "Transport",
+      color: "bg-amber-500",
+      id: "transport",
+    },
+    {
+      icon: <Building2 className="w-6 h-6" />,
+      label: "Municipal",
+      color: "bg-rose-500",
+      id: "municipal",
+    },
+    {
+      icon: <Landmark className="w-6 h-6" />,
+      label: "Registration",
+      color: "bg-indigo-500",
+      id: "register",
+    },
   ];
 
   return (
@@ -52,8 +82,10 @@ export default function Hero() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-10 sm:py-16 lg:py-24">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16" ref={ref}>
-          
+        <div
+          className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16"
+          ref={ref}
+        >
           {/* Left Content - Typography & CTA */}
           <motion.div
             className="lg:w-[60%] text-left w-full"
@@ -101,11 +133,15 @@ export default function Hero() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-5 mb-8 sm:mb-12">
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <div className="flex flex-row gap-2.5 sm:gap-5 mb-8 sm:mb-12">
+              <motion.div
+                className="flex-1 min-w-0"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 <Link
                   to="/services"
-                  className="group relative inline-flex items-center justify-center px-5 sm:px-8 py-3 sm:py-4 bg-sky-500 text-white rounded-xl font-bold text-sm sm:text-lg transition-all duration-300 shadow-[0_0_30px_rgba(14,165,233,0.3)] hover:shadow-[0_0_50px_rgba(14,165,233,0.5)] overflow-hidden touch-target"
+                  className="group relative inline-flex w-full items-center justify-center px-5 sm:px-8 py-3 sm:py-4 bg-sky-500 text-white rounded-xl font-bold text-sm sm:text-lg transition-all duration-300 shadow-[0_0_30px_rgba(14,165,233,0.3)] hover:shadow-[0_0_50px_rgba(14,165,233,0.5)] overflow-hidden touch-target"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Explore Services
@@ -115,12 +151,16 @@ export default function Hero() {
                 </Link>
               </motion.div>
 
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <motion.div
+                className="flex-1 min-w-0"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 <a
                   href="https://wa.me/919100080233"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-5 sm:px-8 py-3 sm:py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold text-sm sm:text-lg transition-all duration-300 backdrop-blur-md touch-target"
+                  className="inline-flex w-full items-center justify-center px-5 sm:px-8 py-3 sm:py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-bold text-sm sm:text-lg transition-all duration-300 backdrop-blur-md touch-target"
                 >
                   WhatsApp Us
                 </a>
@@ -169,8 +209,12 @@ export default function Hero() {
                       <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 lg:w-7 lg:h-7 text-sky-400" />
                     </div>
                     <div>
-                      <div className="text-[8px] sm:text-[10px] lg:text-xs text-sky-400 font-bold uppercase tracking-widest mb-0.5">Verified System</div>
-                      <div className="text-xs sm:text-base lg:text-lg font-extrabold text-white">Bank-Grade Security</div>
+                      <div className="text-[8px] sm:text-[10px] lg:text-xs text-sky-400 font-bold uppercase tracking-widest mb-0.5">
+                        Verified System
+                      </div>
+                      <div className="text-xs sm:text-base lg:text-lg font-extrabold text-white">
+                        Bank-Grade Security
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -199,10 +243,14 @@ export default function Hero() {
                 hash={item.id}
                 className="group flex flex-col items-center gap-1.5 sm:gap-2 lg:gap-3 px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg sm:rounded-xl lg:rounded-2xl transition-all duration-500 shadow-sm sm:shadow-md hover:-translate-y-0.5 sm:hover:-translate-y-1 lg:hover:-translate-y-2 touch-target w-full"
               >
-                <div className={`w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 ${item.color} rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-md sm:shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                <div
+                  className={`w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 ${item.color} rounded-lg sm:rounded-xl lg:rounded-2xl flex items-center justify-center shadow-md sm:shadow-lg group-hover:scale-110 transition-transform duration-500`}
+                >
                   {item.icon}
                 </div>
-                <span className="text-[10px] sm:text-xs lg:text-sm text-slate-300 font-bold tracking-tight text-center">{item.label}</span>
+                <span className="text-[10px] sm:text-xs lg:text-sm text-slate-300 font-bold tracking-tight text-center">
+                  {item.label}
+                </span>
               </Link>
             </motion.div>
           ))}

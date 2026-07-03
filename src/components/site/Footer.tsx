@@ -15,7 +15,8 @@ export function Footer() {
               VN
             </span>
             <div>
-              <div className="font-display text-lg font-bold">Vayu's Networks</div>
+              <div className="font-display text-lg font-bold">Vayus Enterprises
+              </div>
               <div className="text-xs uppercase tracking-widest text-white/60">Kurnool · AP</div>
             </div>
           </div>
@@ -107,7 +108,8 @@ export function Footer() {
 
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-white/60 sm:flex-row sm:px-6 lg:px-8">
-          <p>© 2025 Vayu's Networks. All Rights Reserved.</p>
+          <p>© 2025 Vayus Enterprises
+            . All Rights Reserved.</p>
           <p>
             Designed with <span className="text-red-400">♥</span> for Kurnool
           </p>

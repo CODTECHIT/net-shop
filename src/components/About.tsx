@@ -48,7 +48,8 @@ export default function About() {
             Your Trusted Partner in Kurnool
           </h3>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Vayu's Networks was established in 2025 to bridge the gap between citizens and essential
+            Vayus Enterprises
+            was established in 2025 to bridge the gap between citizens and essential
             online services.
           </p>
         </div>

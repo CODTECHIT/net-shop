@@ -17,13 +17,14 @@ export default function Footer() {
                 <div className="absolute -inset-2 bg-sky-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <img
                   src="/logo.png"
-                  alt="Vayu's Networks Logo"
+                  alt="Vayus Enterprises"
                   className="h-14 w-auto object-contain relative z-10 drop-shadow-[0_0_15px_rgba(14,165,233,0.3)]"
                 />
               </div>
               <div className="flex flex-col">
                 <span className="font-black text-2xl tracking-tighter leading-none text-white uppercase">
-                  Vayu's Networks
+                  Vayus Enterprises
+
                 </span>
                 <span className="text-[10px] text-sky-400 font-black tracking-[0.3em] uppercase mt-1">Kurnool · AP</span>
               </div>
@@ -151,7 +152,8 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-sky-100/50">
-          <p>© {new Date().getFullYear()} Vayu's Networks. All Rights Reserved.</p>
+          <p>© {new Date().getFullYear()} Vayus Enterprises
+            . All Rights Reserved.</p>
           <div className="flex items-center gap-6">
             <p className="flex items-center gap-2">
               Developed by{" "}

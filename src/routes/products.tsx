@@ -10,9 +10,9 @@ function ProductsPage() {
   return (
     <div className="pt-20">
       <SEO
-        title="F Mart — Official Online Store | Vayu's Networks Kurnool"
-        description="Shop premium quality products at the lowest cost from F Mart by Vayu's Networks. Get door delivery across Kurnool with special offers on subsequent orders."
-        keywords="F Mart Kurnool, online shopping Kurnool, doorstep delivery Kurnool, Vayu's Networks store, e-store Kurnool, low price products Kurnool"
+        title="F Mart | Premium Online Shopping & Delivery | Vayus Enterprises"
+        description="Shop premium products at F Mart by Vayus Enterprises. Quality products with lowest cost doorstep delivery in Kurnool and exciting offers on every order."
+        keywords="F Mart Kurnool, online shopping Kurnool, grocery delivery AP, premium products Kurnool, Vayus Enterprises store"
       />
       <Products />
     </div>
