@@ -164,3 +164,12 @@ const processedEventSchema = new mongoose.Schema({
 
 export const ProcessedEvent =
   mongoose.models.ProcessedEvent || mongoose.model("ProcessedEvent", processedEventSchema);
+
+// Settings Schema for Delivery Configuration
+const settingsSchema = new mongoose.Schema({
+  deliveryCharge: { type: Number, default: 50, min: 0 },
+  freeDeliveryThreshold: { type: Number, default: 1000, min: 0 },
+  isFreeDelivery: { type: Boolean, default: false },
+});
+
+export const Settings = mongoose.models.Settings || mongoose.model("Settings", settingsSchema);

@@ -20,7 +20,8 @@ import {
   MapPin,
   RefreshCw,
   Calendar,
-  Edit
+  Edit,
+  Settings as SettingsIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
@@ -63,7 +64,7 @@ function AdminPage() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isVerifying, setIsVerifying] = useState(true);
 
-  const [activeTab, setActiveTab] = useState<"inventory" | "orders">("inventory");
+  const [activeTab, setActiveTab] = useState<"inventory" | "orders" | "settings">("inventory");
 
   // Product state
   const [products, setProducts] = useState<Product[]>([]);
@@ -84,6 +85,15 @@ function AdminPage() {
   const [isLoadingPayments, setIsLoadingPayments] = useState(false);
   const [paymentsPage, setPaymentsPage] = useState(1);
 
+  // Settings state
+  const [settings, setSettings] = useState({
+    deliveryCharge: 50,
+    freeDeliveryThreshold: 1000,
+    isFreeDelivery: false,
+  });
+  const [isUpdatingSettings, setIsUpdatingSettings] = useState(false);
+  const [isLoadingSettings, setIsLoadingSettings] = useState(false);
+
   // Verify auth session cookie on mount
   useEffect(() => {
     verifySession();
@@ -93,8 +103,10 @@ function AdminPage() {
     if (isAuthenticated) {
       if (activeTab === "inventory") {
         fetchProducts();
-      } else {
+      } else if (activeTab === "orders") {
         fetchPayments();
+      } else if (activeTab === "settings") {
+        fetchSettings();
       }
     }
   }, [isAuthenticated, activeTab, paymentsPage]);
@@ -199,6 +211,46 @@ function AdminPage() {
       }
     } catch (err) {
       toast.error("Error deleting product");
+    }
+  };
+
+  const fetchSettings = async () => {
+    setIsLoadingSettings(true);
+    try {
+      const res = await fetch("/api/settings");
+      if (res.ok) {
+        const data = await res.json();
+        setSettings({
+          deliveryCharge: data.deliveryCharge ?? 50,
+          freeDeliveryThreshold: data.freeDeliveryThreshold ?? 1000,
+          isFreeDelivery: data.isFreeDelivery ?? false,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoadingSettings(false);
+    }
+  };
+
+  const handleUpdateSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUpdatingSettings(true);
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(settings),
+      });
+      if (res.ok) {
+        toast.success("Settings updated successfully!");
+      } else {
+        toast.error("Failed to update settings");
+      }
+    } catch (error) {
+      toast.error("An error occurred");
+    } finally {
+      setIsUpdatingSettings(false);
     }
   };
 
@@ -518,6 +570,13 @@ function AdminPage() {
                   >
                     <CreditCard className="w-5 h-5" /> PAYMENTS & ORDERS
                   </button>
+                  <button
+                    onClick={() => setActiveTab("settings")}
+                    className={`text-xl font-black flex items-center gap-3 pb-1 border-b-2 transition-all cursor-pointer ${activeTab === "settings" ? "text-white border-sky-500" : "text-slate-500 border-transparent hover:text-slate-300"
+                      }`}
+                  >
+                    <SettingsIcon className="w-5 h-5" /> STORE SETTINGS
+                  </button>
                 </div>
 
                 <div className="px-4 py-1.5 bg-sky-500/10 border border-sky-500/20 rounded-full w-fit">
@@ -742,6 +801,72 @@ function AdminPage() {
                       </>
                     )}
                   </>
+                )}
+
+                {/* 3. Settings View */}
+                {activeTab === "settings" && (
+                  <div className="max-w-2xl mx-auto space-y-8">
+                    <div>
+                      <h2 className="text-2xl font-black text-white mb-2">Delivery Configuration</h2>
+                      <p className="text-slate-400 text-sm font-medium">Manage how shipping and delivery charges are calculated for customers.</p>
+                    </div>
+
+                    {isLoadingSettings ? (
+                      <div className="flex justify-center py-12">
+                        <Loader2 className="w-8 h-8 text-sky-500 animate-spin" />
+                      </div>
+                    ) : (
+                      <form onSubmit={handleUpdateSettings} className="bg-[#020617] rounded-3xl p-8 border border-white/5 space-y-6">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-sky-400 uppercase tracking-widest ml-2">Standard Delivery Charge (₹)</label>
+                          <input
+                            type="number"
+                            value={settings.deliveryCharge}
+                            onChange={(e) => setSettings({ ...settings, deliveryCharge: Number(e.target.value) })}
+                            className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-sky-500/50 transition-all font-black text-lg"
+                            required
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-sky-400 uppercase tracking-widest ml-2">Free Delivery Threshold (₹)</label>
+                          <input
+                            type="number"
+                            value={settings.freeDeliveryThreshold}
+                            onChange={(e) => setSettings({ ...settings, freeDeliveryThreshold: Number(e.target.value) })}
+                            className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-sky-500/50 transition-all font-black text-lg"
+                            required
+                          />
+                          <p className="text-xs text-slate-500 ml-2 mt-1">Orders above this amount will have ₹0 shipping.</p>
+                        </div>
+
+                        <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+                          <div>
+                            <h4 className="text-white font-bold text-sm">Force Free Delivery</h4>
+                            <p className="text-xs text-slate-500">Enable this to make all orders free delivery regardless of threshold.</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setSettings({ ...settings, isFreeDelivery: !settings.isFreeDelivery })}
+                            className={`w-14 h-8 rounded-full transition-colors flex items-center px-1 cursor-pointer ${settings.isFreeDelivery ? "bg-sky-500" : "bg-slate-700"}`}
+                          >
+                            <motion.div
+                              animate={{ x: settings.isFreeDelivery ? 24 : 0 }}
+                              className="w-6 h-6 bg-white rounded-full shadow-md"
+                            />
+                          </button>
+                        </div>
+
+                        <button
+                          type="submit"
+                          disabled={isUpdatingSettings}
+                          className="w-full bg-sky-500 hover:bg-sky-400 text-white font-black py-4 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-sky-500/10 mt-8 disabled:opacity-50 cursor-pointer"
+                        >
+                          {isUpdatingSettings ? <Loader2 className="w-6 h-6 animate-spin" /> : "SAVE SETTINGS"}
+                        </button>
+                      </form>
+                    )}
+                  </div>
                 )}
 
               </div>

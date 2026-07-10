@@ -80,6 +80,15 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
     retry: false,
   });
 
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: async () => {
+      const res = await fetch("/api/settings");
+      if (!res.ok) throw new Error("Failed to fetch settings");
+      return res.json();
+    }
+  });
+
   // Reset form when modal closes or product changes
   useEffect(() => {
     if (isOpen) {
@@ -101,9 +110,13 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
   if (!product) return null;
 
   const subtotal = product.price * quantity;
-  const gstAmount = Math.round(subtotal * 0.18);
-  const shippingAmount = subtotal >= 1000 ? 0 : 50;
-  const totalAmount = subtotal + gstAmount + shippingAmount;
+  let shippingAmount = 0;
+  if (settings) {
+    shippingAmount = settings.isFreeDelivery ? 0 : (subtotal >= settings.freeDeliveryThreshold ? 0 : settings.deliveryCharge);
+  } else {
+    shippingAmount = subtotal >= 1000 ? 0 : 50; // fallback
+  }
+  const totalAmount = subtotal + shippingAmount;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -298,10 +311,6 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                     <span>₹{subtotal}</span>
                   </div>
                   <div className="flex items-baseline justify-between text-sm text-slate-400">
-                    <span>GST (18%)</span>
-                    <span>₹{gstAmount}</span>
-                  </div>
-                  <div className="flex items-baseline justify-between text-sm text-slate-400">
                     <span>Shipping</span>
                     <span>{shippingAmount === 0 ? "Free" : `₹${shippingAmount}`}</span>
                   </div>
@@ -309,7 +318,7 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                     <span className="text-xs font-bold text-slate-400">Total Price</span>
                     <span className="text-xl sm:text-2xl font-black text-white">₹{totalAmount}</span>
                   </div>
-                  <p className="text-[10px] text-slate-400 font-medium pt-1">VAT & transaction fees included</p>
+                  <p className="text-[10px] text-slate-400 font-medium pt-1">GST & transaction fees included</p>
                 </div>
               </div>
 

@@ -9,7 +9,7 @@ import crypto from "crypto";
 import Razorpay from "razorpay";
 import mongoose from "mongoose";
 import { z } from "zod";
-import { connectDB, Product, Payment, ProcessedEvent, Admin, PasswordResetToken, User, seedAdmin } from "./db.js";
+import { connectDB, Product, Payment, ProcessedEvent, Admin, PasswordResetToken, User, seedAdmin, Settings } from "./db.js";
 import { uploadImage } from "./cloudinary.js";
 import { sendPasswordResetEmail, sendOrderInvoiceEmail, sendTrackingEmail, sendOrderStatusEmail } from "./email.js";
 
@@ -468,6 +468,39 @@ app.post("/api/users/reset-password", passwordResetLimiter, async (req, res) => 
   }
 });
 
+app.get("/api/settings", async (req, res) => {
+  try {
+    let settings = await Settings.findOne();
+    if (!settings) {
+      settings = await Settings.create({});
+    }
+    res.json(settings);
+  } catch (error) {
+    console.error("Fetch settings error:", error);
+    res.status(500).json({ error: "Failed to fetch settings" });
+  }
+});
+
+app.put("/api/settings", authenticateAdmin, async (req, res) => {
+  try {
+    const { deliveryCharge, freeDeliveryThreshold, isFreeDelivery } = req.body;
+    let settings = await Settings.findOne();
+    if (!settings) {
+      settings = new Settings();
+    }
+    
+    if (deliveryCharge !== undefined) settings.deliveryCharge = Number(deliveryCharge);
+    if (freeDeliveryThreshold !== undefined) settings.freeDeliveryThreshold = Number(freeDeliveryThreshold);
+    if (isFreeDelivery !== undefined) settings.isFreeDelivery = Boolean(isFreeDelivery);
+    
+    await settings.save();
+    res.json({ success: true, settings });
+  } catch (error) {
+    console.error("Update settings error:", error);
+    res.status(500).json({ error: "Failed to update settings" });
+  }
+});
+
 // API Routes
 app.get("/api/products", async (req, res) => {
   try {
@@ -656,10 +689,13 @@ app.post("/api/payments/order", authenticateUser, checkoutLimiter, async (req: e
       return res.status(409).json({ error: "Out of stock / Insufficient stock available" });
     }
 
+    let settings = await Settings.findOne();
+    if (!settings) settings = { deliveryCharge: 50, freeDeliveryThreshold: 1000, isFreeDelivery: false };
+
     const subtotal = productCheck.price * qty;
-    const gstAmount = Math.round(subtotal * 0.18); // 18% GST
-    const shippingAmount = subtotal >= 1000 ? 0 : 50; // Free shipping over 1000 INR
-    const totalAmount = subtotal + gstAmount + shippingAmount;
+    const gstAmount = 0; // GST is now included in the product price
+    let shippingAmount = settings.isFreeDelivery ? 0 : (subtotal >= settings.freeDeliveryThreshold ? 0 : settings.deliveryCharge);
+    const totalAmount = subtotal + shippingAmount;
 
     // Duplicate transaction window lock (5 minutes)
     const duplicateCheck = await Payment.findOne({
