@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+import { CartProvider } from "@/context/CartContext";
 
 function NotFoundComponent() {
   return (
@@ -71,15 +72,17 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex flex-col min-h-screen pb-20 md:pb-0">
-        {!isAdminPath && <Navbar />}
-        <main className={isAdminPath ? "" : "flex-1"}>
-          <Outlet />
-        </main>
-        {!isAdminPath && <Footer />}
-        {!isAdminPath && <FloatingWhatsApp />}
-      </div>
-      <Toaster richColors position="top-center" />
+      <CartProvider>
+        <div className="flex flex-col min-h-screen pb-20 md:pb-0">
+          {!isAdminPath && <Navbar />}
+          <main className={isAdminPath ? "" : "flex-1"}>
+            <Outlet />
+          </main>
+          {!isAdminPath && <Footer />}
+          {!isAdminPath && <FloatingWhatsApp />}
+        </div>
+        <Toaster richColors position="top-center" />
+      </CartProvider>
     </QueryClientProvider>
   );
 }

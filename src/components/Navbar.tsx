@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
-import { Menu, X, MessageCircle, User as UserIcon } from "lucide-react";
+import { Menu, X, MessageCircle, User as UserIcon, ShoppingCart } from "lucide-react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import MobileBottomNav from "./MobileBottomNav";
+import { useCart } from "@/context/CartContext";
+import CheckoutModal from "./CheckoutModal";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { cartCount } = useCart();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -120,18 +124,31 @@ export default function Navbar() {
                 )}
               </div>
 
-              <a
-                href="https://wa.me/919100080233?text=Hi,+I+need+your+services"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative px-6 py-3 overflow-hidden rounded-2xl bg-white text-[#020617] font-black text-xs uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-xl shadow-white/5"
-              >
-                <div className="absolute inset-0 bg-sky-500 translate-y-[101%] group-hover:translate-y-0 transition-transform duration-300" />
-                <span className="relative z-10 flex items-center gap-2 group-hover:text-white transition-colors">
-                  <MessageCircle className="w-4 h-4" />
-                  WhatsApp Us
-                </span>
-              </a>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setIsCartOpen(true)}
+                  className="relative p-2 text-slate-400 hover:text-white transition-colors flex items-center justify-center"
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-sky-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-4 text-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </button>
+                <a
+                  href="https://wa.me/919100080233?text=Hi,+I+need+your+services"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative px-6 py-3 overflow-hidden rounded-2xl bg-white text-[#020617] font-black text-xs uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-xl shadow-white/5"
+                >
+                  <div className="absolute inset-0 bg-sky-500 translate-y-[101%] group-hover:translate-y-0 transition-transform duration-300" />
+                  <span className="relative z-10 flex items-center gap-2 group-hover:text-white transition-colors">
+                    <MessageCircle className="w-4 h-4" />
+                    WhatsApp Us
+                  </span>
+                </a>
+              </div>
             </div>
 
             {/* Mobile Contact Button - Visible instead of Menu button */}
@@ -231,7 +248,16 @@ export default function Navbar() {
       </nav>
       
       {/* Include the MobileBottomNav globally for the whole app via Navbar */}
-      <MobileBottomNav onMenuClick={() => setIsOpen(true)} />
+      <MobileBottomNav 
+        onMenuClick={() => setIsOpen(true)} 
+        onCartClick={() => setIsCartOpen(true)} 
+      />
+      
+      <CheckoutModal
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        product={null} // Null triggers cart checkout mode
+      />
     </>
   );
 }

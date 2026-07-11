@@ -288,12 +288,16 @@ const productValidationSchema = z.object({
 });
 
 const orderValidationSchema = z.object({
-  productId: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), "Invalid product ID"),
+  items: z.array(
+    z.object({
+      productId: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), "Invalid product ID"),
+      quantity: z.preprocess((val) => Number(val), z.number().int().min(1, "Quantity must be at least 1").max(100, "Quantity cannot exceed 100"))
+    })
+  ).min(1, "At least one item is required"),
   customerName: z.string().min(1, "Name is required").max(200).trim(),
   customerEmail: z.string().email("Invalid email format").max(320).trim(),
   customerPhone: z.string().regex(/^[6-9]\d{9}$/, "Invalid Indian mobile number (10 digits)").trim(),
   shippingAddress: z.string().min(5, "Address is too short").max(1000).trim(),
-  quantity: z.preprocess((val) => Number(val), z.number().int().min(1, "Quantity must be at least 1").max(100, "Quantity cannot exceed 100"))
 });
 
 const userRegisterSchema = z.object({
@@ -521,15 +525,18 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-app.post("/api/products", authenticateAdmin, upload.single("image"), async (req, res) => {
+app.post("/api/products", authenticateAdmin, upload.array("images", 5), async (req: any, res: any) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: "Image is required" });
+    const files = req.files as Express.Multer.File[];
+    if (!files || files.length === 0) {
+      return res.status(400).json({ error: "At least one image is required" });
     }
 
     // Security: magic-byte validator
-    if (!isValidImageBuffer(req.file.buffer)) {
-      return res.status(400).json({ error: "Invalid image content. Only JPEG, PNG, GIF, and WebP are allowed." });
+    for (const file of files) {
+      if (!isValidImageBuffer(file.buffer)) {
+        return res.status(400).json({ error: "Invalid image content. Only JPEG, PNG, GIF, and WebP are allowed." });
+      }
     }
 
     const parsed = productValidationSchema.safeParse(req.body);
@@ -539,12 +546,13 @@ app.post("/api/products", authenticateAdmin, upload.single("image"), async (req,
 
     const { name, description, price, quantity } = parsed.data;
 
-    // Convert buffer to base64
-    const b64 = Buffer.from(req.file.buffer).toString("base64");
-    const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
-
-    // Upload to Cloudinary
-    const imageUrl = await uploadImage(dataURI);
+    const imageUrls: string[] = [];
+    for (const file of files) {
+      const b64 = Buffer.from(file.buffer).toString("base64");
+      const dataURI = "data:" + file.mimetype + ";base64," + b64;
+      const url = await uploadImage(dataURI);
+      imageUrls.push(url);
+    }
 
     // Save to MongoDB
     const newProduct = new Product({
@@ -552,7 +560,8 @@ app.post("/api/products", authenticateAdmin, upload.single("image"), async (req,
       description,
       price,
       quantity,
-      imageUrl,
+      imageUrl: imageUrls[0], // Primary image
+      images: imageUrls,
     });
 
     await newProduct.save();
@@ -580,7 +589,7 @@ app.delete("/api/products/:id", authenticateAdmin, async (req, res) => {
   }
 });
 
-app.put("/api/products/:id", authenticateAdmin, upload.single("image"), async (req, res) => {
+app.put("/api/products/:id", authenticateAdmin, upload.array("images", 5), async (req: any, res: any) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -595,13 +604,24 @@ app.put("/api/products/:id", authenticateAdmin, upload.single("image"), async (r
     const { name, description, price, quantity } = parsed.data;
     const updateData: any = { name, description, price, quantity };
 
-    if (req.file) {
-      if (!isValidImageBuffer(req.file.buffer)) {
-        return res.status(400).json({ error: "Invalid image content. Only JPEG, PNG, GIF, and WebP are allowed." });
+    const files = req.files as Express.Multer.File[];
+    if (files && files.length > 0) {
+      for (const file of files) {
+        if (!isValidImageBuffer(file.buffer)) {
+          return res.status(400).json({ error: "Invalid image content. Only JPEG, PNG, GIF, and WebP are allowed." });
+        }
       }
-      const b64 = Buffer.from(req.file.buffer).toString("base64");
-      const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
-      updateData.imageUrl = await uploadImage(dataURI);
+      
+      const imageUrls: string[] = [];
+      for (const file of files) {
+        const b64 = Buffer.from(file.buffer).toString("base64");
+        const dataURI = "data:" + file.mimetype + ";base64," + b64;
+        const url = await uploadImage(dataURI);
+        imageUrls.push(url);
+      }
+      
+      updateData.imageUrl = imageUrls[0];
+      updateData.images = imageUrls;
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true });
@@ -669,8 +689,6 @@ async function completePayment(razorpayOrderId: string, razorpayPaymentId: strin
 
 app.post("/api/payments/order", authenticateUser, checkoutLimiter, async (req: express.Request, res: express.Response) => {
   let reservedProduct = false;
-  let pId = "";
-  let qty = 0;
   let tempPaymentId: string | null = null;
 
   try {
@@ -679,27 +697,36 @@ app.post("/api/payments/order", authenticateUser, checkoutLimiter, async (req: e
       return res.status(400).json({ error: parsed.error.errors[0].message });
     }
 
-    const { productId, customerName, customerEmail, customerPhone, shippingAddress, quantity } = parsed.data;
-    pId = productId;
-    qty = quantity;
+    const { items, customerName, customerEmail, customerPhone, shippingAddress } = parsed.data;
+
+    let subtotal = 0;
+    const validatedItems = [];
 
     // Optimistic stock check before locking
-    const productCheck = await Product.findOne({ _id: productId, quantity: { $gte: qty } });
-    if (!productCheck) {
-      return res.status(409).json({ error: "Out of stock / Insufficient stock available" });
+    for (const item of items) {
+      const productCheck = await Product.findOne({ _id: item.productId, quantity: { $gte: item.quantity } });
+      if (!productCheck) {
+        return res.status(409).json({ error: `Out of stock or insufficient quantity for one or more products` });
+      }
+      subtotal += productCheck.price * item.quantity;
+      validatedItems.push({
+        productId: productCheck._id,
+        productName: productCheck.name,
+        price: productCheck.price,
+        quantity: item.quantity
+      });
     }
 
     let settings = await Settings.findOne();
     if (!settings) settings = { deliveryCharge: 50, freeDeliveryThreshold: 1000, isFreeDelivery: false };
 
-    const subtotal = productCheck.price * qty;
     const gstAmount = 0; // GST is now included in the product price
-    let shippingAmount = settings.isFreeDelivery ? 0 : (subtotal >= settings.freeDeliveryThreshold ? 0 : settings.deliveryCharge);
+    const shippingAmount = settings.isFreeDelivery ? 0 : (subtotal >= settings.freeDeliveryThreshold ? 0 : settings.deliveryCharge);
     const totalAmount = subtotal + shippingAmount;
 
     // Duplicate transaction window lock (5 minutes)
     const duplicateCheck = await Payment.findOne({
-      productId: productCheck._id,
+      "items.productId": validatedItems[0].productId,
       customerEmail,
       amount: totalAmount,
       status: "pending",
@@ -716,12 +743,10 @@ app.post("/api/payments/order", authenticateUser, checkoutLimiter, async (req: e
     // Save pending payment record FIRST to prevent inventory leak on crash
     const newPayment = new Payment({
       razorpayOrderId: "temp_" + crypto.randomUUID(), // Temp ID until Razorpay creates one
-      productId: productCheck._id,
-      productName: productCheck.name,
+      items: validatedItems,
       amount: totalAmount,
       gstAmount,
       shippingAmount,
-      quantity: qty,
       customerName,
       customerEmail,
       customerPhone,
@@ -737,14 +762,16 @@ app.post("/api/payments/order", authenticateUser, checkoutLimiter, async (req: e
       await newPayment.save({ session });
       tempPaymentId = newPayment._id.toString();
 
-      const product = await Product.findOneAndUpdate(
-        { _id: productId, quantity: { $gte: qty } },
-        { $inc: { quantity: -qty } },
-        { session, returnDocument: "after" }
-      );
+      for (const item of validatedItems) {
+        const product = await Product.findOneAndUpdate(
+          { _id: item.productId, quantity: { $gte: item.quantity } },
+          { $inc: { quantity: -item.quantity } },
+          { session, returnDocument: "after" }
+        );
 
-      if (!product) {
-        throw new Error("Out of stock / Insufficient stock available");
+        if (!product) {
+          throw new Error(`Out of stock / Insufficient stock for ${item.productName}`);
+        }
       }
       
       await Payment.findByIdAndUpdate(tempPaymentId, { stockDeducted: true }, { session });
@@ -787,8 +814,10 @@ app.post("/api/payments/order", authenticateUser, checkoutLimiter, async (req: e
   } catch (error: any) {
     logger.error({ err: error }, "Error creating Razorpay order");
     // Release reserved stock on error
-    if (reservedProduct && pId && qty > 0) {
-      await Product.findByIdAndUpdate(pId, { $inc: { quantity: qty } });
+    if (reservedProduct) {
+      for (const item of validatedItems) {
+        await Product.findByIdAndUpdate(item.productId, { $inc: { quantity: item.quantity } });
+      }
     }
     if (tempPaymentId) {
       await Payment.findByIdAndUpdate(tempPaymentId, {

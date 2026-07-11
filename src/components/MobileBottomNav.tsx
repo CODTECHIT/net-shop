@@ -1,9 +1,11 @@
-import { Home, LayoutGrid, ShoppingBag, User as UserIcon, Menu } from "lucide-react";
+import { Home, LayoutGrid, ShoppingBag, User as UserIcon, Menu, ShoppingCart } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useCart } from "@/context/CartContext";
 
-export default function MobileBottomNav({ onMenuClick }: { onMenuClick: () => void }) {
+export default function MobileBottomNav({ onMenuClick, onCartClick }: { onMenuClick: () => void, onCartClick?: () => void }) {
   const location = useLocation();
+  const { cartCount } = useCart();
 
   const { data: userData } = useQuery({
     queryKey: ["userMe"],
@@ -58,6 +60,26 @@ export default function MobileBottomNav({ onMenuClick }: { onMenuClick: () => vo
           );
         })}
         
+        {/* Cart Toggle Button */}
+        {onCartClick && (
+          <button
+            onClick={onCartClick}
+            className="flex flex-col items-center justify-center w-16 gap-1 transition-all duration-300 text-slate-400 hover:text-white relative"
+          >
+            <div className="relative">
+              <ShoppingCart className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-sky-500 text-white text-[9px] font-bold px-1 rounded-full min-w-3 text-center">
+                  {cartCount}
+                </span>
+              )}
+            </div>
+            <span className="text-[9px] font-bold uppercase tracking-wider opacity-70">
+              Cart
+            </span>
+          </button>
+        )}
+
         {/* Menu Toggle Button */}
         <button
           onClick={onMenuClick}

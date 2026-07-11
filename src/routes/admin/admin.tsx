@@ -37,6 +37,7 @@ interface Product {
   price: number;
   quantity: string;
   imageUrl: string;
+  images?: string[];
   clicks: number;
   createdAt: string;
 }
@@ -75,8 +76,8 @@ function AdminPage() {
     price: "",
     quantity: "1",
   });
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
 
@@ -255,16 +256,34 @@ function AdminPage() {
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("Image must be less than 5MB");
-        return;
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
+      const validFiles = files.filter(file => {
+        if (file.size > 5 * 1024 * 1024) {
+          toast.error(`Image ${file.name} must be less than 5MB`);
+          return false;
+        }
+        return true;
+      });
+      
+      if (validFiles.length > 5) {
+        toast.error("Maximum 5 images allowed");
+        validFiles.splice(5);
       }
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result as string);
-      reader.readAsDataURL(file);
+
+      setImageFiles(validFiles);
+      
+      const previews: string[] = [];
+      validFiles.forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          previews.push(reader.result as string);
+          if (previews.length === validFiles.length) {
+            setImagePreviews(previews);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
     }
   };
 
@@ -276,21 +295,21 @@ function AdminPage() {
       price: product.price.toString(),
       quantity: product.quantity.toString(),
     });
-    setImagePreview(product.imageUrl);
-    setImageFile(null); // No new file by default, uses existing on server unless replaced
+    setImagePreviews(product.images?.length ? product.images : [product.imageUrl]);
+    setImageFiles([]); // No new file by default, uses existing on server unless replaced
   };
 
   const handleCancelEdit = () => {
     setEditingProductId(null);
     setFormData({ name: "", description: "", price: "", quantity: "1" });
-    setImagePreview(null);
-    setImageFile(null);
+    setImagePreviews([]);
+    setImageFiles([]);
   };
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingProductId && !imageFile) {
-      toast.error("Please upload an image for the new product");
+    if (!editingProductId && imageFiles.length === 0) {
+      toast.error("Please upload at least one image for the new product");
       return;
     }
 
@@ -300,8 +319,8 @@ function AdminPage() {
     form.append("description", formData.description);
     form.append("price", formData.price);
     form.append("quantity", formData.quantity);
-    if (imageFile) {
-      form.append("image", imageFile);
+    if (imageFiles.length > 0) {
+      imageFiles.forEach(file => form.append("images", file));
     }
 
     try {
@@ -316,8 +335,8 @@ function AdminPage() {
       if (res.ok) {
         toast.success(editingProductId ? "Product updated" : "Product published");
         setFormData({ name: "", description: "", price: "", quantity: "1" });
-        setImageFile(null);
-        setImagePreview(null);
+        setImageFiles([]);
+        setImagePreviews([]);
         setEditingProductId(null);
         fetchProducts();
       } else {
@@ -507,22 +526,26 @@ function AdminPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-sky-400 uppercase tracking-widest ml-2">Visual Asset</label>
+                  <label className="text-[10px] font-black text-sky-400 uppercase tracking-widest ml-2">Visual Assets</label>
                   <div className="relative aspect-video rounded-2xl bg-[#020617] border-2 border-dashed border-white/5 flex flex-col items-center justify-center overflow-hidden group hover:border-sky-500/30 transition-all">
-                    {imagePreview ? (
+                    {imagePreviews.length > 0 ? (
                       <>
-                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                        <div className="flex w-full h-full overflow-x-auto snap-x">
+                          {imagePreviews.map((preview, i) => (
+                            <img key={i} src={preview} alt={`Preview ${i}`} className="w-full h-full object-cover shrink-0 snap-center" />
+                          ))}
+                        </div>
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <span className="bg-white text-black px-4 py-2 rounded-xl font-bold text-xs">REPLACE IMAGE</span>
+                          <span className="bg-white text-black px-4 py-2 rounded-xl font-bold text-xs">REPLACE IMAGES</span>
                         </div>
                       </>
                     ) : (
                       <div className="text-center">
                         <ImageIcon className="w-8 h-8 text-slate-700 mx-auto mb-2" />
-                        <p className="text-[10px] font-bold text-slate-500">UPLOAD 1:1 OR 4:5 IMAGE</p>
+                        <p className="text-[10px] font-bold text-slate-500">UPLOAD UP TO 5 IMAGES (1:1 OR 4:5)</p>
                       </div>
                     )}
-                    <input type="file" accept="image/*" onChange={handleImageChange} className="absolute inset-0 opacity-0 cursor-pointer" required={!imagePreview} />
+                    <input type="file" accept="image/*" multiple onChange={handleImageChange} className="absolute inset-0 opacity-0 cursor-pointer" required={imagePreviews.length === 0} />
                   </div>
                 </div>
 

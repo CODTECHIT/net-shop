@@ -35,12 +35,15 @@ interface Product {
   price: number;
   quantity: number; // Represents available stock count
   imageUrl: string;
+  description?: string;
+  category?: string;
+  images?: string[];
 }
 
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  product: Product | null;
+  product?: Product | null; // If null, checks out the entire cart
 }
 
 const loadRazorpayScript = () => {
@@ -58,7 +61,10 @@ const loadRazorpayScript = () => {
   });
 };
 
+import { useCart } from "@/context/CartContext";
+
 export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModalProps) {
+  const { cartItems, cartTotal, clearCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
@@ -107,9 +113,18 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
     }
   }, [isOpen, product, userData]);
 
-  if (!product) return null;
+  const checkoutItems = product 
+    ? [{ productId: product._id, productName: product.name, price: product.price, quantity }]
+    : cartItems.map(item => ({ 
+        productId: item.product._id, 
+        productName: item.product.name, 
+        price: item.product.price, 
+        quantity: item.quantity 
+      }));
 
-  const subtotal = product.price * quantity;
+  if (checkoutItems.length === 0) return null;
+
+  const subtotal = product ? product.price * quantity : cartTotal;
   let shippingAmount = 0;
   if (settings) {
     shippingAmount = settings.isFreeDelivery ? 0 : (subtotal >= settings.freeDeliveryThreshold ? 0 : settings.deliveryCharge);
@@ -123,8 +138,12 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const incrementQty = () => setQuantity((q) => (q < product.quantity ? q + 1 : q));
-  const decrementQty = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
+  const incrementQty = () => {
+    if (product) setQuantity((q) => (q < product.quantity ? q + 1 : q));
+  };
+  const decrementQty = () => {
+    if (product) setQuantity((q) => (q > 1 ? q - 1 : 1));
+  };
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,12 +184,11 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          productId: product._id,
+          items: checkoutItems.map(i => ({ productId: i.productId, quantity: i.quantity })),
           customerName: formData.name,
           customerEmail: formData.email,
           customerPhone: formData.phone,
           shippingAddress: formData.address,
-          quantity,
         }),
       });
 
@@ -188,7 +206,7 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
         amount: orderData.amount,
         currency: orderData.currency,
         name: "Vayus Enterprises",
-        description: `Order for ${product.name}`,
+        description: `Order for ${checkoutItems.length} item(s)`,
         order_id: orderData.orderId,
         handler: async function (response: Record<string, string>) {
           // Trigger signature verification on backend
@@ -206,9 +224,9 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
 
             const verifyData = await verifyRes.json();
             if (verifyRes.ok && verifyData.success) {
-              setPaymentId(response.razorpay_payment_id);
               setStep("success");
-              toast.success("Payment successful!");
+              setPaymentId(verifyData.paymentId || response.razorpay_payment_id);
+              if (!product) clearCart(); // Clear cart on successful order
             } else {
               setStep("error");
               setErrorMessage(verifyData.error || "Payment signature verification failed.");
@@ -272,36 +290,40 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                     </DialogDescription>
                   </DialogHeader>
 
-                  <div className="bg-[#0A0F1C] p-4 rounded-3xl border border-white/5 flex gap-4 items-center">
-                    <div className="w-16 h-16 rounded-xl bg-white/5 overflow-hidden border border-white/10 shrink-0">
-                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="font-bold text-white text-sm truncate uppercase tracking-tight">{product.name}</h4>
-                      <p className="text-sky-400 font-bold mt-1 text-sm">₹{product.price}</p>
-                    </div>
-                  </div>
-
-                  {/* Quantity Selector */}
-                  <div className="mt-6">
-                    <label className="text-[10px] font-black text-sky-400 uppercase tracking-widest block mb-2">Quantity</label>
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={decrementQty}
-                        className="w-10 h-10 bg-[#0A0F1C] hover:bg-white/5 text-white border border-white/10 flex items-center justify-center transition-all active:scale-90"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="text-lg font-black text-white w-8 text-center">{quantity}</span>
-                      <button
-                        type="button"
-                        onClick={incrementQty}
-                        className="w-10 h-10 bg-[#0A0F1C] hover:bg-white/5 text-white border border-white/10 flex items-center justify-center transition-all active:scale-90"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
+                  <div className="bg-[#0A0F1C] p-4 rounded-3xl border border-white/5 flex flex-col gap-4">
+                    {product ? (
+                      <div className="flex gap-4 items-center bg-white/5 p-3 rounded-2xl border border-white/10">
+                        <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
+                          <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="flex flex-col flex-1 py-1 min-w-0">
+                          <h4 className="font-bold text-white text-sm truncate leading-tight mb-1">{product.name}</h4>
+                          <div className="flex items-center justify-between mt-auto">
+                            <span className="font-black text-sky-400">₹{product.price}</span>
+                            <div className="flex items-center gap-3 bg-black/40 border border-white/10 rounded-lg p-1">
+                              <button type="button" onClick={decrementQty} className="p-1 hover:bg-white/10 rounded-md text-white transition-colors cursor-pointer"><Minus className="w-3.5 h-3.5" /></button>
+                              <span className="text-sm font-bold w-4 text-center select-none text-white">{quantity}</span>
+                              <button type="button" onClick={incrementQty} className="p-1 hover:bg-white/10 rounded-md text-white transition-colors cursor-pointer"><Plus className="w-3.5 h-3.5" /></button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                        {cartItems.map((item) => (
+                          <div key={item.product._id} className="flex gap-3 items-center bg-white/5 p-3 rounded-2xl border border-white/10">
+                            <img src={item.product.imageUrl} className="w-16 h-16 rounded-xl object-cover shrink-0" />
+                            <div className="flex-1 py-1 min-w-0">
+                              <h4 className="text-sm font-bold text-white truncate leading-tight mb-1">{item.product.name}</h4>
+                              <div className="flex justify-between items-center text-xs mt-1">
+                                <span className="font-bold text-slate-400">Qty: {item.quantity}</span>
+                                <span className="font-black text-sky-400">₹{item.product.price}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -431,8 +453,8 @@ export default function CheckoutModal({ isOpen, onClose, product }: CheckoutModa
                 <h3 className="text-2xl font-black text-white mb-2 tracking-tight">ORDER PLACED SUCCESSFULLY!</h3>
                 <p className="text-slate-400 text-sm font-medium mb-6">Payment verified and logged.</p>
                 <div className="bg-[#0A0F1C] border border-white/5 rounded-2xl p-4 max-w-sm mx-auto text-left font-mono text-xs text-slate-350 space-y-2">
-                  <div className="flex justify-between"><span className="text-slate-500">Product:</span> <span className="font-semibold text-white truncate max-w-[200px]">{product.name}</span></div>
-                  <div className="flex justify-between"><span className="text-slate-500">Quantity:</span> <span className="font-semibold text-white">{quantity}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Items:</span> <span className="font-semibold text-white truncate max-w-[200px]">{product ? product.name : `${checkoutItems.length} items`}</span></div>
+                  <div className="flex justify-between"><span className="text-slate-500">Total Qty:</span> <span className="font-semibold text-white">{product ? quantity : checkoutItems.reduce((acc, item) => acc + item.quantity, 0)}</span></div>
                   <div className="flex justify-between"><span className="text-slate-500">Amount Paid:</span> <span className="font-semibold text-sky-400">₹{totalAmount}</span></div>
                   <div className="flex justify-between"><span className="text-slate-500">Payment ID:</span> <span className="font-semibold text-white">{paymentId}</span></div>
                 </div>

@@ -114,12 +114,17 @@ const paymentSchema = new mongoose.Schema({
   trackingId: { type: String, index: true },
   trackingUrl: { type: String },
   trackingEmailSentAt: { type: Date },
-  productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", index: true },
-  productName: { type: String, required: true, maxlength: 200 },
+  items: [
+    {
+      productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+      productName: { type: String, required: true, maxlength: 200 },
+      price: { type: Number, required: true, min: 0 },
+      quantity: { type: Number, required: true, min: 1 },
+    }
+  ],
   amount: { type: Number, required: true, min: 0 },
   gstAmount: { type: Number, default: 0, min: 0 },
   shippingAmount: { type: Number, default: 0, min: 0 },
-  quantity: { type: Number, required: true, default: 1, min: 1 },
   customerName: { type: String, required: true, maxlength: 200, trim: true },
   customerEmail: { type: String, required: true, maxlength: 320, trim: true },
   customerPhone: { type: String, required: true, maxlength: 20, trim: true },
