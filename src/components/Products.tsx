@@ -75,7 +75,7 @@ export default function Products() {
   });
 
   return (
-    <section id="products" className="py-24 bg-gradient-to-tr from-rose-50/30 via-emerald-50/20 to-amber-50/30 relative overflow-hidden">
+    <section id="products" className="pt-4 pb-16 sm:py-24 bg-gradient-to-tr from-rose-50/30 via-emerald-50/20 to-amber-50/30 relative overflow-hidden">
       {/* Background Decoration glows */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-rose-200/20 rounded-full blur-[120px] -z-0 pointer-events-none hidden md:block" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-200/20 rounded-full blur-[120px] -z-0 pointer-events-none hidden md:block" />
@@ -213,7 +213,7 @@ export default function Products() {
                 transition={{ duration: 0.4, delay: index * 0.05 }}
               >
                 {/* Image Container */}
-                <div 
+                <div
                   className="relative aspect-square overflow-hidden bg-slate-50 border-b border-slate-100 cursor-pointer"
                   onClick={async () => {
                     try {
@@ -259,62 +259,64 @@ export default function Products() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-2 w-full mt-auto">
+                  <div className="flex flex-col gap-2 w-full mt-auto">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         if (product.quantity > 0) addToCart(product);
                       }}
                       disabled={product.quantity <= 0}
-                      className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl font-bold text-[10px] sm:text-xs transition-all duration-300 shadow-sm cursor-pointer active:scale-95 ${product.quantity <= 0
+                      className={`w-full flex items-center justify-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl font-bold text-xs transition-all duration-300 shadow-sm cursor-pointer active:scale-95 whitespace-nowrap ${product.quantity <= 0
                         ? "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none border border-slate-200"
                         : "bg-slate-900 hover:bg-slate-800 text-white"
                         }`}
                     >
-                      <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                      Add to Cart
+                      <ShoppingCart className="w-4 h-4 shrink-0" />
+                      <span>Add to Cart</span>
                     </button>
-                    <button
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        if (product.quantity <= 0) return;
-                        if (!userData?.user) {
-                          navigate({ to: "/login" });
-                          return;
-                        }
-                        try {
-                        } catch (err) {
-                          console.error("Failed to register product click", err);
-                        }
-                        setSelectedProduct(product);
-                        setIsCheckoutOpen(true);
-                      }}
-                      disabled={product.quantity <= 0}
-                      className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl font-bold text-[10px] sm:text-xs transition-all duration-300 shadow-sm cursor-pointer active:scale-95 ${product.quantity <= 0
-                        ? "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none border border-slate-200"
-                        : "bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-605 text-white shadow-md shadow-rose-500/10"
-                        }`}
-                    >
-                      <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                      Buy Now
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const url = window.location.href;
-                        const text = `Check out ${product.name} at F Mart!`;
-                        if (navigator.share) {
-                          navigator.share({ title: 'F Mart', text, url }).catch(()=>{});
-                        } else {
-                          navigator.clipboard.writeText(`${text} ${url}`);
-                          alert("Link copied to clipboard!");
-                        }
-                      }}
-                      className="px-3 py-2 sm:py-3 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-600 rounded-lg sm:rounded-xl font-bold transition-all duration-300 flex items-center justify-center shrink-0 active:scale-95"
-                      title="Share Product"
-                    >
-                      <Share2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex gap-2 w-full">
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (product.quantity <= 0) return;
+                          if (!userData?.user) {
+                            navigate({ to: "/login" });
+                            return;
+                          }
+                          try {
+                          } catch (err) {
+                            console.error("Failed to register product click", err);
+                          }
+                          setSelectedProduct(product);
+                          setIsCheckoutOpen(true);
+                        }}
+                        disabled={product.quantity <= 0}
+                        className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl font-bold text-xs transition-all duration-300 shadow-sm cursor-pointer active:scale-95 whitespace-nowrap ${product.quantity <= 0
+                          ? "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none border border-slate-200"
+                          : "bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-605 text-white shadow-md shadow-rose-500/10"
+                          }`}
+                      >
+                        <ShoppingBag className="w-4 h-4 shrink-0" />
+                        <span>Buy Now</span>
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const url = window.location.href;
+                          const text = `Check out ${product.name} at F Mart!`;
+                          if (navigator.share) {
+                            navigator.share({ title: 'F Mart', text, url }).catch(() => { });
+                          } else {
+                            navigator.clipboard.writeText(`${text} ${url}`);
+                            alert("Link copied to clipboard!");
+                          }
+                        }}
+                        className="px-3 py-2.5 sm:px-4 sm:py-3 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-600 rounded-xl font-bold transition-all duration-300 flex items-center justify-center shrink-0 active:scale-95"
+                        title="Share Product"
+                      >
+                        <Share2 className="w-4 h-4 shrink-0" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -331,11 +333,11 @@ export default function Products() {
         onClose={() => setIsProductViewOpen(false)}
         product={selectedProduct}
         onBuyNow={(prod) => {
-           setSelectedProduct(prod);
-           setIsCheckoutOpen(true);
+          setSelectedProduct(prod);
+          setIsCheckoutOpen(true);
         }}
       />
-      
+
       <CheckoutModal
         isOpen={isCheckoutOpen}
         onClose={() => {
